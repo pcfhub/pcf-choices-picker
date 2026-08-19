@@ -59,6 +59,19 @@ use exactly one `required="true"` bound property. If it turns out only one is
 offered, the fallback is to ship `choices` alone and add `choice` later. This is
 a reading, not an observation — there is no environment to import into here.
 
+## `control.type` is `virtual`, not `field`
+
+`pcfhub.json` says `"type": "virtual"` even though this binds a single column,
+because that is what the hub itself will record. `ControlType` is a three-case
+enum — `field`, `dataset`, `virtual` — and `ControlManifestParser::controlType()`
+resolves it as: dataset wins, then virtual, then field. A non-dataset
+`control-type="virtual"` control is therefore `Virtual` on the hub whatever this
+file claims, and a disagreement between the two is exactly the silent mismatch
+nothing validates.
+
+`pcf-tag-list` says `"dataset"` and is also virtual — consistent, because
+dataset wins over virtual.
+
 ## Fluent 9 and React 16.8.6 cannot be installed together
 
 The skill and `pcf-tag-list` both use `<platform-library name="React"

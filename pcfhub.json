@@ -14,7 +14,7 @@
   "control": {
     "namespace": "PCFHub",
     "constructor": "ChoicesPicker",
-    "type": "field",
+    "type": "virtual",
     "framework": "react_virtual",
     "manifestPath": "ChoicesPicker/ControlManifest.Input.xml"
   },
