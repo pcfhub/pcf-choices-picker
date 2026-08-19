@@ -27,5 +27,20 @@ cannot be cleanly uninstalled.
 
 ## Requirements
 
-State the minimum platform version, and any dependency a maker has to install
-first.
+- A Dataverse environment with code components enabled.
+- For canvas apps and custom pages, **Code components for canvas apps** must be
+  switched on in the environment's feature settings. Model-driven apps need
+  nothing extra.
+
+No premium licence is required. The control declares no external service usage
+and calls no third-party endpoint, so it does not carry the premium flag that
+`external-service-usage` would apply.
+
+## Adding it to a form
+
+Once the solution is imported, the control appears in the form designer for any
+**Choice** or **Multi-Select Choice** column. Select the column, choose
+**Choices Picker** as the control, and save and publish.
+
+See [Model-driven apps](model-driven.md) for the per-column settings, and
+[Canvas apps](canvas.md) for the one extra property canvas requires.

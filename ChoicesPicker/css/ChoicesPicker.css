@@ -72,3 +72,18 @@
     outline: 2px solid var(--colorStrokeFocus2, #000000);
     outline-offset: 2px;
 }
+
+.ChoicesPicker-clear {
+    font: inherit;
+    color: var(--colorBrandForegroundLink, #0f6cbd);
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.ChoicesPicker-clear:focus-visible {
+    outline: 2px solid var(--colorStrokeFocus2, #000000);
+    outline-offset: 2px;
+}

@@ -105,6 +105,7 @@ export function ChoicesPickerControl(props: IProps): React.ReactElement {
                     : mode === 'single'
                       ? renderRadios()
                       : renderCheckboxes()}
+                {renderClear()}
             </div>
         </FluentProvider>
     );
@@ -146,6 +147,25 @@ export function ChoicesPickerControl(props: IProps): React.ReactElement {
                 </button>
             );
         });
+    }
+
+    /**
+     * Single-select needs an explicit way back to "nothing chosen": a radio,
+     * and a pill standing in for one, cannot be unset by clicking it again, so
+     * without this an optional Choice column could never be emptied once a
+     * value had been picked. Multi-select needs no such affordance — unchecking
+     * the last option already does it.
+     */
+    function renderClear(): React.ReactElement | null {
+        if (mode !== 'single' || selected.length === 0 || disabled) {
+            return null;
+        }
+
+        return (
+            <button type="button" className="ChoicesPicker-clear" onClick={() => commit([])}>
+                {getString('Clear')}
+            </button>
+        );
     }
 
     function renderRadios(): React.ReactElement {

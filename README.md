@@ -50,8 +50,9 @@ from the hourly sweep otherwise.
 
 | Path | What it is |
 | --- | --- |
-| `ChoicesPicker/` | The control: manifest, entry point, CSS, localised strings |
+| `ChoicesPicker/` | The control: manifest, entry point, React components, CSS, localised strings |
 | `Solution/` | The Dataverse solution that packages it |
+| `SPEC.md` | What building this corrected, and what is verified versus read |
 | `docs/` | The pages PCFHub publishes — see the comments in each file |
 | `media/` | Images and video referenced from the docs |
 | `pcfhub.json` | The hub's manifest: identity, links, docs path, demo |

@@ -6,9 +6,9 @@
   "category": "pickers",
   "tags": [
     "react",
+    "fluent",
     "choices",
     "optionset",
-    "picker",
     "accessible"
   ],
   "control": {
@@ -31,6 +31,72 @@
     "screenshots": []
   },
   "demo": {
-    "fidelity": "none"
+    "fidelity": "full",
+    "bundle": "out/controls/ChoicesPicker/bundle.js",
+    "styles": [
+      "out/controls/ChoicesPicker/css/ChoicesPicker.css"
+    ],
+    "presets": [
+      {
+        "slug": "status-single",
+        "name": "Single choice",
+        "description": "A Choice column shown as pills, with one option selected.",
+        "isDefault": true,
+        "props": {
+          "choice": 2,
+          "choices": null,
+          "options": "[{\"Value\":1,\"Label\":\"Draft\",\"Color\":\"#616161\"},{\"Value\":2,\"Label\":\"In review\",\"Color\":\"#0F6CBD\"},{\"Value\":3,\"Label\":\"Approved\",\"Color\":\"#107C10\"},{\"Value\":4,\"Label\":\"Rejected\",\"Color\":\"#C4314B\"}]",
+          "selectionMode": "single",
+          "layout": "pills",
+          "showColors": true
+        }
+      },
+      {
+        "slug": "skills-multi",
+        "name": "Multi-select",
+        "description": "A Multi-Select Choice column, three of six selected.",
+        "props": {
+          "choice": null,
+          "choices": [
+            1,
+            3,
+            5
+          ],
+          "options": "[{\"Value\":1,\"Label\":\"TypeScript\",\"Color\":\"#3178C6\"},{\"Value\":2,\"Label\":\"Power Fx\",\"Color\":\"#742774\"},{\"Value\":3,\"Label\":\"Dataverse\",\"Color\":\"#0F6CBD\"},{\"Value\":4,\"Label\":\"Accessibility\",\"Color\":\"#107C10\"},{\"Value\":5,\"Label\":\"React\",\"Color\":\"#087EA4\"},{\"Value\":6,\"Label\":\"Fluent UI\",\"Color\":\"#5B2D90\"}]",
+          "selectionMode": "multiple",
+          "layout": "pills",
+          "showColors": true
+        }
+      },
+      {
+        "slug": "stacked-list",
+        "name": "Stacked list",
+        "description": "The same multi-select column as Fluent checkboxes instead of pills.",
+        "props": {
+          "choice": null,
+          "choices": [
+            2,
+            4
+          ],
+          "options": "[{\"Value\":1,\"Label\":\"TypeScript\",\"Color\":\"#3178C6\"},{\"Value\":2,\"Label\":\"Power Fx\",\"Color\":\"#742774\"},{\"Value\":3,\"Label\":\"Dataverse\",\"Color\":\"#0F6CBD\"},{\"Value\":4,\"Label\":\"Accessibility\",\"Color\":\"#107C10\"},{\"Value\":5,\"Label\":\"React\",\"Color\":\"#087EA4\"},{\"Value\":6,\"Label\":\"Fluent UI\",\"Color\":\"#5B2D90\"}]",
+          "selectionMode": "multiple",
+          "layout": "list",
+          "showColors": true
+        }
+      },
+      {
+        "slug": "empty",
+        "name": "Nothing selected",
+        "description": "The empty state, with option colours switched off.",
+        "props": {
+          "choice": null,
+          "choices": null,
+          "options": "[{\"Value\":1,\"Label\":\"Draft\",\"Color\":\"#616161\"},{\"Value\":2,\"Label\":\"In review\",\"Color\":\"#0F6CBD\"},{\"Value\":3,\"Label\":\"Approved\",\"Color\":\"#107C10\"},{\"Value\":4,\"Label\":\"Rejected\",\"Color\":\"#C4314B\"}]",
+          "selectionMode": "single",
+          "layout": "pills",
+          "showColors": false
+        }
+      }
+    ]
   }
 }

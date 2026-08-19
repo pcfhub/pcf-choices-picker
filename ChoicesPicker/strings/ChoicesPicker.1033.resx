@@ -62,4 +62,5 @@
   <data name="ShowColors_Desc"><value>Tint a selected pill with the colour defined on the choice in Dataverse.</value></data>
   <data name="NoOptions"><value>No options are available for this column.</value></data>
   <data name="Masked"><value>You do not have permission to view this value.</value></data>
+  <data name="Clear"><value>Clear selection</value></data>
 </root>

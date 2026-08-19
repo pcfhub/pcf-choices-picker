@@ -62,4 +62,5 @@
   <data name="ShowColors_Desc"><value>Färbt die ausgewählte Pille mit der in Dataverse definierten Farbe der Auswahl.</value></data>
   <data name="NoOptions"><value>Für diese Spalte sind keine Optionen verfügbar.</value></data>
   <data name="Masked"><value>Sie haben keine Berechtigung, diesen Wert anzuzeigen.</value></data>
+  <data name="Clear"><value>Auswahl löschen</value></data>
 </root>
