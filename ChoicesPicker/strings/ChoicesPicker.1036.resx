@@ -48,7 +48,7 @@
   <data name="Options_Name"><value>Options</value></data>
   <data name="Options_Desc"><value>Fournit la liste des options lorsque l’hôte n’a pas de métadonnées de colonne, comme dans une application canevas. Accepte [{"Value":1,"Label":"Draft","Color":"#616161"}] ou "1:Brouillon, 2:En revue". Prioritaire sur les options de la colonne.</value></data>
   <data name="SelectionMode_Name"><value>Mode de sélection</value></data>
-  <data name="SelectionMode_Desc"><value>Force une sélection unique ou multiple. Laissez sur Automatique pour la déduire de la colonne liée.</value></data>
+  <data name="SelectionMode_Desc"><value>Ne s’applique qu’aux colonnes de choix multiples, qui peuvent être limitées à un seul choix. Une colonne de choix n’en autorise toujours qu’un, quelle que soit cette valeur.</value></data>
   <data name="SelectionMode_Auto_Name"><value>Automatique</value></data>
   <data name="SelectionMode_Single_Name"><value>Unique</value></data>
   <data name="SelectionMode_Multiple_Name"><value>Multiple</value></data>

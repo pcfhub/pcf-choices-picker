@@ -1,7 +1,6 @@
 import { IInputs } from '../generated/ManifestTypes';
 
 export type SelectionMode = 'single' | 'multiple';
-
 type OptionMetadata = ComponentFramework.PropertyHelper.OptionMetadata;
 type OptionSetMetadata = ComponentFramework.PropertyHelper.FieldPropertyMetadata.OptionSetMetadata;
 
@@ -29,59 +28,168 @@ export function boundValue(context: ComponentFramework.Context<IInputs>): Compon
  *   3. Single, because a Choice column is the commoner case and guessing wrong
  *      shows the right options with the wrong arity rather than nothing at all.
  */
+/** Dataverse's own attribute type names, as `attributes.Type` reports them. */
+const MULTI_ATTRIBUTE_TYPES = new Set(['multiselectpicklist']);
+const SINGLE_ATTRIBUTE_TYPES = new Set(['picklist', 'state', 'status']);
+
+/**
+ * Dataverse's attribute type for the bound column — `picklist`,
+ * `multiselectpicklist`, `state`, `status`.
+ *
+ * This is read off `attributes` even though the declared `Metadata` interface
+ * does not include it. The runtime object carries considerably more than the
+ * type definitions admit (`Behavior`, `DefaultValue`, `EntityLogicalName`,
+ * `Format`, `Options`, `Precision`, `Timestamp`, `Type`), observed directly on
+ * a model-driven form. Hence the cast, the `typeof` guard, and callers that
+ * still work when it is missing.
+ */
+function attributeType(property: ComponentFramework.PropertyTypes.Property): string {
+    const attributes = property.attributes as { Type?: unknown } | undefined;
+
+    return typeof attributes?.Type === 'string' ? attributes.Type.toLowerCase() : '';
+}
+
+/** What the bound column is physically capable of storing. */
+export type ColumnArity = 'single' | 'multiple' | 'unknown';
+
+/**
+ * What the column can hold, which is not the same question as how the control
+ * should behave.
+ *
+ * `attributes.Type` is the discriminator, and it is the *only* one that works.
+ * Two earlier attempts read `property.type` instead; both were wrong, because
+ * on a type-grouped property the platform reports `"MultiSelectOptionSet"`
+ * there for **every** binding — observed on a single-select
+ * `address1_addresstypecode` column, which reports `attributes.Type:
+ * "picklist"` and `type: "MultiSelectOptionSet"` at the same time.
+ */
+export function resolveColumnArity(property: ComponentFramework.PropertyTypes.Property): ColumnArity {
+    const type = attributeType(property);
+
+    if (MULTI_ATTRIBUTE_TYPES.has(type)) {
+        return 'multiple';
+    }
+
+    if (SINGLE_ATTRIBUTE_TYPES.has(type)) {
+        return 'single';
+    }
+
+    return 'unknown';
+}
+
+/**
+ * How many options the user may pick.
+ *
+ * **The column is a ceiling, not a default.** A Choice column stores exactly one
+ * value, so `selectionMode: multiple` on one is not a preference the control can
+ * honour — it would offer a multi-select UI over a column that keeps only one of
+ * the choices, losing the rest silently on save. That combination is refused
+ * here rather than half-implemented.
+ *
+ * A Multi-Select Choice column is the only one where both answers are real: it
+ * can hold many, so restricting it to one is a legitimate thing for a maker to
+ * ask for. There `selectionMode` is honoured in both directions.
+ */
 export function resolveMode(context: ComponentFramework.Context<IInputs>): SelectionMode {
+    const property = boundValue(context);
+    const arity = resolveColumnArity(property);
+
+    if (arity === 'single') {
+        return 'single';
+    }
+
     const declared = context.parameters.selectionMode.raw;
 
     if (declared === 'single' || declared === 'multiple') {
         return declared;
     }
 
-    const property = boundValue(context);
+    if (arity === 'multiple') {
+        return 'multiple';
+    }
 
-    // The value's own shape is proof: only a multi-select column produces an
-    // array, and only a single-select one a bare number. An empty multi-select
-    // column normally still reports `[]`, so this answers most empty columns
-    // too.
+    // No attribute metadata — a canvas app, or the hub's demo harness. Only the
+    // value's shape is left, and an array can mean nothing else.
     if (Array.isArray(property.raw)) {
         return 'multiple';
     }
 
-    if (typeof property.raw === 'number') {
-        return 'single';
-    }
-
-    // `type` is matched exactly, never as a substring.
-    //
-    // This previously tested /multi/i and got single-select columns wrong on
-    // every model-driven form: for a type-grouped property the platform does
-    // not report the resolved member here, it reports the group's accepted
-    // types — a string that contains "MultiSelectOptionSet" whichever column is
-    // actually bound. So the loose test matched always, and an OptionSet column
-    // rendered as multi-select.
-    //
-    // Exact comparison is right whether the host names the resolved member or
-    // the whole group: a definitive name is honoured, and the group string
-    // matches neither and falls through.
-    const type = (property.type ?? '').trim();
-
-    if (type === 'MultiSelectOptionSet') {
-        return 'multiple';
-    }
-
-    // Single by default. It is the commoner column, it is what an ambiguous
-    // type string means in practice, and the arity that is genuinely
-    // undetectable — a multi-select column reporting neither an array nor a
-    // definitive type — is exactly what `selectionMode` exists to override.
+    // Single by default: the commoner column, and the safer wrong answer, since
+    // it offers fewer choices than the column allows rather than more.
     return 'single';
 }
 
-/** Normalise either arity to an array, so the rest of the control has one shape. */
-export function toSelection(raw: unknown): number[] {
-    if (Array.isArray(raw)) {
-        return raw.filter((entry): entry is number => typeof entry === 'number');
+/**
+ * Whether the bound column expects an array written back to it.
+ *
+ * Deliberately *not* the same as the selection mode. A Multi-Select Choice
+ * column restricted to single selection still stores an array — writing it a
+ * bare number would hand the platform a value of the wrong shape for the
+ * column, which is the mirror of the bug this whole rule exists to prevent.
+ *
+ * With no metadata to go on, the UI's arity is the only available guess.
+ */
+export function writesArray(
+    property: ComponentFramework.PropertyTypes.Property,
+    mode: SelectionMode,
+): boolean {
+    const arity = resolveColumnArity(property);
+
+    if (arity !== 'unknown') {
+        return arity === 'multiple';
     }
 
-    return typeof raw === 'number' ? [raw] : [];
+    return mode === 'multiple';
+}
+
+/**
+ * Normalise either arity to an array of option values, so the rest of the
+ * control has one shape to deal with.
+ *
+ * A bare number is the documented shape, and it is not the only one that
+ * arrives. A single-select column bound through this control's type group hands
+ * over an object instead — observed on a real form as
+ * `{ _label: 'Bill To', _val: 1, _state: -1, … }`, where `_val` carries the
+ * option value. Reading only `typeof raw === 'number'` there yields an empty
+ * selection: the control renders, and nothing looks selected.
+ *
+ * So each entry is unwrapped through the candidates below rather than assumed.
+ * `_val` is a minified internal field and could be renamed by a platform
+ * update, which is exactly why it is one candidate among several and why
+ * failing to find a value drops that entry instead of throwing.
+ */
+export function toSelection(raw: unknown): number[] {
+    if (raw === null || raw === undefined) {
+        return [];
+    }
+
+    return (Array.isArray(raw) ? raw : [raw]).flatMap(toOptionValue);
+}
+
+function toOptionValue(entry: unknown): number[] {
+    if (typeof entry === 'number') {
+        return Number.isFinite(entry) ? [entry] : [];
+    }
+
+    if (typeof entry === 'string') {
+        const parsed = Number(entry.trim());
+
+        return entry.trim() !== '' && Number.isFinite(parsed) ? [parsed] : [];
+    }
+
+    if (entry !== null && typeof entry === 'object') {
+        const candidates = entry as Record<string, unknown>;
+
+        for (const key of ['_val', 'Value', 'value', 'val', 'id']) {
+            const candidate = candidates[key];
+
+            if (typeof candidate === 'number' && Number.isFinite(candidate)) {
+                return [candidate];
+            }
+        }
+    }
+
+    return [];
 }
 
 /**

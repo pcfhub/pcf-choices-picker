@@ -48,7 +48,7 @@
   <data name="Options_Name"><value>Optionen</value></data>
   <data name="Options_Desc"><value>Liefert die Optionsliste, wenn der Host keine Spaltenmetadaten hat, etwa in einer Canvas-App. Akzeptiert [{"Value":1,"Label":"Draft","Color":"#616161"}] oder "1:Entwurf, 2:In Prüfung". Überschreibt die Optionen der Spalte.</value></data>
   <data name="SelectionMode_Name"><value>Auswahlmodus</value></data>
-  <data name="SelectionMode_Desc"><value>Erzwingt Einfach- oder Mehrfachauswahl. Auf Automatisch belassen, um sie aus der gebundenen Spalte zu übernehmen.</value></data>
+  <data name="SelectionMode_Desc"><value>Gilt nur für Mehrfachauswahlspalten, die auf eine Auswahl begrenzt werden können. Eine Auswahlspalte lässt immer genau eine zu, unabhängig von dieser Einstellung.</value></data>
   <data name="SelectionMode_Auto_Name"><value>Automatisch</value></data>
   <data name="SelectionMode_Single_Name"><value>Einfach</value></data>
   <data name="SelectionMode_Multiple_Name"><value>Mehrfach</value></data>

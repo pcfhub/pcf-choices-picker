@@ -1,7 +1,14 @@
 import * as React from 'react';
 import { IInputs, IOutputs } from './generated/ManifestTypes';
 import { ChoicesPickerControl, IProps } from './components/ChoicesPickerControl';
-import { boundValue, resolveMode, resolveOptions, toSelection, SelectionMode } from './components/resolve';
+import {
+    boundValue,
+    resolveMode,
+    resolveOptions,
+    toSelection,
+    writesArray,
+    SelectionMode,
+} from './components/resolve';
 
 type Theme = Record<string, string>;
 
@@ -20,6 +27,13 @@ export class ChoicesPicker implements ComponentFramework.ReactControl<IInputs, I
     private mode: SelectionMode = 'single';
     private selected: number[] = [];
 
+    /**
+     * Whether the bound *column* stores an array, which is not the same as
+     * whether the control offers multiple selection — a Multi-Select Choice
+     * column restricted to one choice still stores an array.
+     */
+    private storesArray = false;
+
     public init(
         _context: ComponentFramework.Context<IInputs>,
         notifyOutputChanged: () => void,
@@ -31,6 +45,8 @@ export class ChoicesPicker implements ComponentFramework.ReactControl<IInputs, I
         const property = boundValue(context);
 
         this.mode = resolveMode(context);
+        this.storesArray = writesArray(property, this.mode);
+
         this.selected = toSelection(property.raw);
 
         // `security` is absent on hosts that do not apply column-level security,
@@ -61,16 +77,20 @@ export class ChoicesPicker implements ComponentFramework.ReactControl<IInputs, I
     };
 
     /**
-     * Arity has to match the column: a Multi-Select Choice column stores an
-     * array of values and a Choice column a bare number. Writing the wrong one
-     * hands the platform a value it cannot store.
+     * Arity has to match the **column**, not the UI: a Multi-Select Choice
+     * column stores an array of values and a Choice column a bare number.
+     * Writing the wrong shape hands the platform a value it cannot store.
+     *
+     * So this reads `storesArray` rather than `mode`. A Multi-Select Choice
+     * column restricted to one choice offers a single-select UI and still
+     * writes `[value]`.
      *
      * `IOutputs.value` is `any` because the property is type-grouped — the
      * generated type cannot know which arity a given binding resolved to, so
      * this method is where that is decided.
      */
     public getOutputs(): IOutputs {
-        if (this.mode === 'multiple') {
+        if (this.storesArray) {
             return { value: this.selected };
         }
 

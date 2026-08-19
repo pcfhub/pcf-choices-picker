@@ -48,7 +48,7 @@
   <data name="Options_Name"><value>Opciones</value></data>
   <data name="Options_Desc"><value>Proporciona la lista de opciones cuando el host no tiene metadatos de columna, como en una aplicación de lienzo. Acepta [{"Value":1,"Label":"Draft","Color":"#616161"}] o "1:Borrador, 2:En revisión". Tiene prioridad sobre las opciones de la columna.</value></data>
   <data name="SelectionMode_Name"><value>Modo de selección</value></data>
-  <data name="SelectionMode_Desc"><value>Fuerza selección única o múltiple. Déjelo en Automático para tomarlo de la columna enlazada.</value></data>
+  <data name="SelectionMode_Desc"><value>Solo se aplica a columnas de opciones múltiples, que pueden limitarse a una opción. Una columna de opción siempre permite exactamente una, sea cual sea este valor.</value></data>
   <data name="SelectionMode_Auto_Name"><value>Automático</value></data>
   <data name="SelectionMode_Single_Name"><value>Única</value></data>
   <data name="SelectionMode_Multiple_Name"><value>Múltiple</value></data>

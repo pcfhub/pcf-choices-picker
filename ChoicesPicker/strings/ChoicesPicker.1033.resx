@@ -48,7 +48,7 @@
   <data name="Options_Name"><value>Options</value></data>
   <data name="Options_Desc"><value>Supplies the option list where the host has no column metadata, such as a canvas app. Accepts [{"Value":1,"Label":"Draft","Color":"#616161"}] or "1:Draft, 2:In review". Overrides the column’s own options when set.</value></data>
   <data name="SelectionMode_Name"><value>Selection mode</value></data>
-  <data name="SelectionMode_Desc"><value>Override single or multiple selection. Leave on Automatic to take it from the bound column.</value></data>
+  <data name="SelectionMode_Desc"><value>Applies to Multi-Select Choice columns only, which may be limited to one choice. A Choice column always allows exactly one, whatever this is set to.</value></data>
   <data name="SelectionMode_Auto_Name"><value>Automatic</value></data>
   <data name="SelectionMode_Single_Name"><value>Single</value></data>
   <data name="SelectionMode_Multiple_Name"><value>Multiple</value></data>
