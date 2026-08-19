@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a2c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a2c561934e089</value>
+  </resheader>
+  <data name="ChoicesPicker_Name"><value>Auswahlfeld</value></data>
+  <data name="ChoicesPicker_Desc"><value>Zeigt eine Auswahl- oder Mehrfachauswahlspalte als tastaturzugängliche Auswahl an.</value></data>
+  <data name="Choice_Name"><value>Auswahlspalte</value></data>
+  <data name="Choice_Desc"><value>Binden Sie diese an eine Auswahlspalte für Einfachauswahl. Lassen Sie sie ungebunden bei einer Mehrfachauswahlspalte.</value></data>
+  <data name="Choices_Name"><value>Mehrfachauswahlspalte</value></data>
+  <data name="Choices_Desc"><value>Binden Sie diese an eine Mehrfachauswahlspalte für Mehrfachauswahl. Lassen Sie sie ungebunden bei einer Auswahlspalte.</value></data>
+  <data name="Options_Name"><value>Optionen</value></data>
+  <data name="Options_Desc"><value>Liefert die Optionsliste, wenn der Host keine Spaltenmetadaten hat, etwa in einer Canvas-App. Akzeptiert [{"Value":1,"Label":"Draft","Color":"#616161"}] oder "1:Entwurf, 2:In Prüfung". Überschreibt die Optionen der Spalte.</value></data>
+  <data name="SelectionMode_Name"><value>Auswahlmodus</value></data>
+  <data name="SelectionMode_Desc"><value>Welche gebundene Spalte gelesen wird. Auf Automatisch belassen, sofern die Spalte nicht leer ist und das Steuerelement falsch rät.</value></data>
+  <data name="SelectionMode_Auto_Name"><value>Automatisch</value></data>
+  <data name="SelectionMode_Single_Name"><value>Einfach</value></data>
+  <data name="SelectionMode_Multiple_Name"><value>Mehrfach</value></data>
+  <data name="Layout_Name"><value>Layout</value></data>
+  <data name="Layout_Desc"><value>Zeichnet die Optionen als Pillen oder als gestapelte Liste.</value></data>
+  <data name="Layout_Pills_Name"><value>Pillen</value></data>
+  <data name="Layout_List_Name"><value>Gestapelte Liste</value></data>
+  <data name="ShowColors_Name"><value>Optionsfarben verwenden</value></data>
+  <data name="ShowColors_Desc"><value>Färbt die ausgewählte Pille mit der in Dataverse definierten Farbe der Auswahl.</value></data>
+  <data name="NoOptions"><value>Für diese Spalte sind keine Optionen verfügbar.</value></data>
+  <data name="Masked"><value>Sie haben keine Berechtigung, diesen Wert anzuzeigen.</value></data>
+</root>

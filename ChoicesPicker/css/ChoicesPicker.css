@@ -1,92 +1,74 @@
 /*
- * Everything is scoped under .ChoicesPicker so the control cannot leak styles
- * into the host form.
+ * Scoped under .ChoicesPicker so the control cannot leak styles into the host
+ * form. Fluent owns the appearance of the stacked-list layout entirely; the
+ * rules here cover the container and the hand-built pills.
  *
- * Colours come from the host's own CSS custom properties where the platform
- * publishes them, with a literal fallback for hosts that do not — hard-coding
+ * Colours come from Fluent v9 design tokens, which the host publishes as CSS
+ * custom properties, with a literal fallback for hosts that do not. Hard-coding
  * them outright fails in dark mode and in themed environments.
  */
 
 .ChoicesPicker {
     display: flex;
-    flex-wrap: wrap;
     gap: 8px;
-    align-items: center;
     font-family: var(--fontFamilyBase, "Segoe UI", sans-serif);
     font-size: var(--fontSizeBase300, 14px);
     color: var(--colorNeutralForeground1, #242424);
 }
 
-.ChoicesPicker-empty {
-    color: var(--colorNeutralForeground3, #616161);
-    font-style: italic;
-}
-
-.ChoicesPicker-option {
-    display: inline-flex;
+.ChoicesPicker-pills {
+    flex-wrap: wrap;
     align-items: center;
-    gap: 6px;
-    cursor: pointer;
-    border-radius: 4px;
 }
 
-.ChoicesPicker-option.is-disabled {
-    cursor: default;
-    opacity: 0.6;
-}
-
-/*
- * The native input stays in the accessibility tree and keeps its keyboard
- * behaviour; only its painting is replaced. `appearance: none` would remove the
- * focus ring too, so the ring is reinstated on the wrapper below.
- */
-.ChoicesPicker-pills .ChoicesPicker-input {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    padding: 0;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-    border: 0;
-}
-
-.ChoicesPicker-pills .ChoicesPicker-option {
-    padding: 4px 12px;
-    border: 1px solid var(--colorNeutralStroke1, #d1d1d1);
-    border-radius: 999px;
-    background: var(--colorNeutralBackground1, #ffffff);
-}
-
-.ChoicesPicker-pills .ChoicesPicker-option.is-selected {
-    border-color: var(--ChoicesPicker-color, var(--colorBrandStroke1, #0f6cbd));
-    background: var(--ChoicesPicker-color, var(--colorBrandBackground2, #ebf3fc));
-    color: var(--colorNeutralForeground1, #242424);
-    font-weight: 600;
-}
-
-/*
- * :focus-within rather than :focus — the input inside is what actually receives
- * focus, and it is visually hidden in the pills layout.
- */
-.ChoicesPicker-pills .ChoicesPicker-option:focus-within {
-    outline: 2px solid var(--colorStrokeFocus2, #000000);
-    outline-offset: 2px;
-}
-
-.ChoicesPicker-checkboxes {
+.ChoicesPicker-list {
     flex-direction: column;
     align-items: flex-start;
     gap: 4px;
 }
 
-.ChoicesPicker-clear {
+.ChoicesPicker-empty,
+.ChoicesPicker-masked {
+    color: var(--colorNeutralForeground3, #616161);
+    font-style: italic;
+}
+
+/*
+ * A real <button> with aria-pressed, so keyboard activation, focus order and
+ * the disabled state are the platform's rather than reimplemented.
+ */
+.ChoicesPicker-pill {
     font: inherit;
-    color: var(--colorBrandForegroundLink, #0f6cbd);
-    background: none;
-    border: none;
-    padding: 4px;
+    padding: 4px 12px;
+    border: 1px solid var(--colorNeutralStroke1, #d1d1d1);
+    border-radius: 999px;
+    background: var(--colorNeutralBackground1, #ffffff);
+    color: inherit;
     cursor: pointer;
-    text-decoration: underline;
+}
+
+.ChoicesPicker-pill:hover:not(:disabled) {
+    background: var(--colorNeutralBackground1Hover, #f5f5f5);
+}
+
+.ChoicesPicker-pill:disabled {
+    cursor: default;
+    opacity: 0.6;
+}
+
+/*
+ * --ChoicesPicker-color is set inline from the option's Dataverse colour when
+ * one exists and "Use option colours" is on. It only ever tints the border and
+ * a translucent background, so a dark option colour cannot swallow the label.
+ */
+.ChoicesPicker-pill.is-selected {
+    border-color: var(--ChoicesPicker-color, var(--colorBrandStroke1, #0f6cbd));
+    box-shadow: inset 0 0 0 1px var(--ChoicesPicker-color, var(--colorBrandStroke1, #0f6cbd));
+    background: var(--colorBrandBackground2, #ebf3fc);
+    font-weight: 600;
+}
+
+.ChoicesPicker-pill:focus-visible {
+    outline: 2px solid var(--colorStrokeFocus2, #000000);
+    outline-offset: 2px;
 }

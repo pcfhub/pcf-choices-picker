@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a2c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a2c561934e089</value>
+  </resheader>
+  <data name="ChoicesPicker_Name"><value>Selector de opciones</value></data>
+  <data name="ChoicesPicker_Desc"><value>Muestra una columna de opción o de opciones múltiples como un selector accesible con el teclado.</value></data>
+  <data name="Choice_Name"><value>Columna de opción</value></data>
+  <data name="Choice_Desc"><value>Enlácela a una columna de opción para selección única. Déjela sin enlazar si usa una columna de opciones múltiples.</value></data>
+  <data name="Choices_Name"><value>Columna de opciones múltiples</value></data>
+  <data name="Choices_Desc"><value>Enlácela a una columna de opciones múltiples para selección múltiple. Déjela sin enlazar si usa una columna de opción.</value></data>
+  <data name="Options_Name"><value>Opciones</value></data>
+  <data name="Options_Desc"><value>Proporciona la lista de opciones cuando el host no tiene metadatos de columna, como en una aplicación de lienzo. Acepta [{"Value":1,"Label":"Draft","Color":"#616161"}] o "1:Borrador, 2:En revisión". Tiene prioridad sobre las opciones de la columna.</value></data>
+  <data name="SelectionMode_Name"><value>Modo de selección</value></data>
+  <data name="SelectionMode_Desc"><value>Qué columna enlazada leer. Déjelo en Automático salvo que la columna esté vacía y el control no acierte.</value></data>
+  <data name="SelectionMode_Auto_Name"><value>Automático</value></data>
+  <data name="SelectionMode_Single_Name"><value>Única</value></data>
+  <data name="SelectionMode_Multiple_Name"><value>Múltiple</value></data>
+  <data name="Layout_Name"><value>Diseño</value></data>
+  <data name="Layout_Desc"><value>Dibuja las opciones como píldoras o como una lista apilada.</value></data>
+  <data name="Layout_Pills_Name"><value>Píldoras</value></data>
+  <data name="Layout_List_Name"><value>Lista apilada</value></data>
+  <data name="ShowColors_Name"><value>Usar colores de las opciones</value></data>
+  <data name="ShowColors_Desc"><value>Tiñe la píldora seleccionada con el color definido en la opción en Dataverse.</value></data>
+  <data name="NoOptions"><value>No hay opciones disponibles para esta columna.</value></data>
+  <data name="Masked"><value>No tiene permiso para ver este valor.</value></data>
+</root>

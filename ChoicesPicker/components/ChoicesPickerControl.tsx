@@ -1,103 +1,177 @@
 import * as React from 'react';
+import {
+    Checkbox,
+    FluentProvider,
+    Radio,
+    RadioGroup,
+    webLightTheme,
+} from '@fluentui/react-components';
+import { SelectionMode } from './resolve';
 
-export interface Choice {
-    value: number;
-    label: string;
-    color: string | null;
-}
+type OptionMetadata = ComponentFramework.PropertyHelper.OptionMetadata;
 
 export interface IProps {
-    choices: Choice[];
+    options: OptionMetadata[];
     selected: number[];
-    multiple: boolean;
-    layout: 'pills' | 'checkboxes';
+    mode: SelectionMode;
+    layout: 'pills' | 'list';
     showColors: boolean;
     disabled: boolean;
+    masked: boolean;
     label: string;
+    theme: Record<string, string> | undefined;
     getString: (id: string) => string;
-    onToggle: (value: number) => void;
-    onClear: () => void;
+    onChange: (next: number[]) => void;
 }
 
 /**
- * Rendered with real semantics rather than clickable divs, because the arity of
- * the bound column decides the correct role and a screen reader has no other way
- * to learn it: a multi-select column is a group of checkboxes, a single-select
- * column is a radio group. Getting this wrong is not cosmetic — it tells the
- * user they may pick several when they may pick one.
+ * Selection lives in React state here rather than being read straight from
+ * `context.parameters` on every render, and that is not a stylistic choice.
  *
- * Both layouts use the same underlying inputs. `pills` only changes how they are
- * painted, so keyboard behaviour cannot drift between the two.
+ * On a real form the platform re-renders after `notifyOutputChanged()`, so
+ * either approach works. In PCFHub's demo harness it does not:
+ * `notifyOutputChanged()` posts `harness:outputChanged` to the parent window
+ * and neither calls `renderView()` nor writes the value back into its own
+ * `values` map. A control that rendered from `context.parameters` alone would
+ * therefore look completely dead in its own published demo — every click
+ * accepted, nothing visibly changing.
+ *
+ * The effect below resyncs when the platform hands down a genuinely different
+ * value, so a form-driven change still wins over local state.
  */
 export function ChoicesPickerControl(props: IProps): React.ReactElement {
-    const { choices, selected, multiple, layout, showColors, disabled, label, getString } = props;
+    const { options, mode, layout, showColors, disabled, masked, label, getString } = props;
 
-    if (choices.length === 0) {
-        return React.createElement(
-            'div',
-            { className: 'ChoicesPicker ChoicesPicker-empty' },
-            getString('NoChoices'),
+    const [selected, setSelected] = React.useState<number[]>(props.selected);
+
+    // Compared by content, not identity: `props.selected` is a fresh array on
+    // every updateView, so an identity dependency would reset local state on
+    // every render and undo the user's click.
+    const incoming = props.selected.join(',');
+
+    React.useEffect(() => {
+        setSelected(props.selected);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [incoming]);
+
+    const commit = React.useCallback(
+        (next: number[]): void => {
+            setSelected(next);
+            props.onChange(next);
+        },
+        [props],
+    );
+
+    const toggle = React.useCallback(
+        (value: number): void => {
+            if (mode === 'single') {
+                commit([value]);
+
+                return;
+            }
+
+            commit(
+                selected.includes(value)
+                    ? selected.filter((entry) => entry !== value)
+                    : [...selected, value],
+            );
+        },
+        [commit, mode, selected],
+    );
+
+    const theme = props.theme ?? webLightTheme;
+
+    if (masked) {
+        return (
+            <FluentProvider theme={theme}>
+                <div className="ChoicesPicker ChoicesPicker-masked">{getString('Masked')}</div>
+            </FluentProvider>
         );
     }
 
-    const groupRole = multiple ? 'group' : 'radiogroup';
+    if (options.length === 0) {
+        return (
+            <FluentProvider theme={theme}>
+                <div className="ChoicesPicker ChoicesPicker-empty">{getString('NoOptions')}</div>
+            </FluentProvider>
+        );
+    }
 
-    return React.createElement(
-        'div',
-        {
-            className: `ChoicesPicker ChoicesPicker-${layout}`,
-            role: groupRole,
-            'aria-label': label || undefined,
-            'aria-disabled': disabled || undefined,
-        },
-        choices.map((choice) => {
-            const isSelected = selected.includes(choice.value);
+    return (
+        <FluentProvider theme={theme}>
+            <div className={`ChoicesPicker ChoicesPicker-${layout}`}>
+                {layout === 'pills'
+                    ? renderPills()
+                    : mode === 'single'
+                      ? renderRadios()
+                      : renderCheckboxes()}
+            </div>
+        </FluentProvider>
+    );
 
-            // A selected pill is tinted with the option's own colour when
-            // Dataverse supplies one. Left as a CSS custom property rather than
-            // an inline background so the stylesheet keeps control of contrast.
+    /**
+     * Toggle buttons rather than Fluent's InteractionTag, and `aria-pressed`
+     * rather than `role="radio"` even in single-select.
+     *
+     * `role="radio"` would promise arrow-key navigation between the pills,
+     * which plain buttons do not provide — announcing a keyboard contract the
+     * control does not honour is worse than presenting an honest one. A row of
+     * toggle buttons is reachable by Tab and activated by Space or Enter, which
+     * is exactly what it looks like.
+     */
+    function renderPills(): React.ReactElement[] {
+        return options.map((option) => {
+            const isSelected = selected.includes(option.Value);
+
+            // Left as a custom property so the stylesheet keeps control of
+            // contrast rather than painting an arbitrary Dataverse colour
+            // straight onto a background.
             const style =
-                showColors && choice.color
-                    ? ({ ['--ChoicesPicker-color']: choice.color } as React.CSSProperties)
+                showColors && option.Color
+                    ? ({ ['--ChoicesPicker-color']: option.Color } as React.CSSProperties)
                     : undefined;
 
-            return React.createElement(
-                'label',
-                {
-                    key: choice.value,
-                    className: [
-                        'ChoicesPicker-option',
-                        isSelected ? 'is-selected' : '',
-                        disabled ? 'is-disabled' : '',
-                    ]
-                        .filter(Boolean)
-                        .join(' '),
-                    style,
-                },
-                React.createElement('input', {
-                    type: multiple ? 'checkbox' : 'radio',
-                    className: 'ChoicesPicker-input',
-                    name: 'ChoicesPicker',
-                    checked: isSelected,
-                    disabled,
-                    onChange: () => props.onToggle(choice.value),
-                }),
-                React.createElement('span', { className: 'ChoicesPicker-label' }, choice.label),
+            return (
+                <button
+                    key={option.Value}
+                    type="button"
+                    className={`ChoicesPicker-pill${isSelected ? ' is-selected' : ''}`}
+                    aria-pressed={isSelected}
+                    aria-label={label ? `${label}: ${option.Label}` : option.Label}
+                    disabled={disabled}
+                    style={style}
+                    onClick={() => toggle(option.Value)}
+                >
+                    {option.Label}
+                </button>
             );
-        }),
-        // A radio group cannot be emptied from the keyboard once a value is set,
-        // so single-select needs an explicit way back to "nothing chosen".
-        // Multi-select does not: unchecking the last box already does it.
-        !multiple && selected.length > 0 && !disabled
-            ? React.createElement(
-                  'button',
-                  {
-                      type: 'button',
-                      className: 'ChoicesPicker-clear',
-                      onClick: props.onClear,
-                  },
-                  getString('Clear'),
-              )
-            : null,
-    );
+        });
+    }
+
+    function renderRadios(): React.ReactElement {
+        return (
+            <RadioGroup
+                value={selected.length > 0 ? String(selected[0]) : ''}
+                disabled={disabled}
+                aria-label={label || undefined}
+                onChange={(_event, data) => commit([Number(data.value)])}
+            >
+                {options.map((option) => (
+                    <Radio key={option.Value} value={String(option.Value)} label={option.Label} />
+                ))}
+            </RadioGroup>
+        );
+    }
+
+    function renderCheckboxes(): React.ReactElement[] {
+        return options.map((option) => (
+            <Checkbox
+                key={option.Value}
+                label={option.Label}
+                checked={selected.includes(option.Value)}
+                disabled={disabled}
+                onChange={() => toggle(option.Value)}
+            />
+        ));
+    }
 }

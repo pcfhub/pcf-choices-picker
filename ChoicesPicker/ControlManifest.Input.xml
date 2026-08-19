@@ -15,26 +15,63 @@
     <external-service-usage enabled="false" />
 
     <!--
-      One bound property that accepts either kind of choice column, rather than
-      two optional ones. A field control is placed on exactly one column, so two
-      bound properties would leave one permanently unbound and force every read
-      through a "which one did the maker actually use" branch.
+      Two optional bound properties rather than one `of-type-group`, which was
+      the first shape tried and is wrong for two independent reasons:
 
-      The runtime cost of the type-group is that `raw` is `number | number[] |
-      null` — single-select and multi-select differ in arity, not in kind — so
-      the code normalises to an array once, at the boundary.
+        1. `of-type-group` is model-driven only, so it would have cost canvas
+           support outright.
+        2. PCFHub flattens a type-group into a single `of_type` string —
+           `implode(' | ', ...)` in ControlManifestParser — so the published API
+           reference would read "OptionSet | MultiSelectOptionSet" and the demo
+           panel's editor inference would fall through to a plain text box.
+
+      Exactly one of these is ever bound: the platform only offers the control
+      for a column whose type matches, and a Choice column cannot satisfy
+      `choices` any more than a Multi-Select Choice column can satisfy `choice`.
+      `selectionMode` decides which one the code reads.
     -->
-    <type-group name="choice">
-      <type>OptionSet</type>
-      <type>MultiSelectOptionSet</type>
-    </type-group>
-
-    <property name="value"
-              display-name-key="Value_Name"
-              description-key="Value_Desc"
-              of-type-group="choice"
+    <property name="choice"
+              display-name-key="Choice_Name"
+              description-key="Choice_Desc"
+              of-type="OptionSet"
               usage="bound"
-              required="true" />
+              required="false" />
+
+    <property name="choices"
+              display-name-key="Choices_Name"
+              description-key="Choices_Desc"
+              of-type="MultiSelectOptionSet"
+              usage="bound"
+              required="false" />
+
+    <!--
+      The option list. In a model-driven app the platform supplies it as
+      `<bound>.attributes.Options`; `attributes` is optional on the platform's
+      own property types, and in a canvas app there is no column metadata at
+      all, so this is the only source there. When non-empty it wins, so a maker
+      can relabel or narrow the choices without touching the column.
+
+      Shape is ComponentFramework.PropertyHelper.OptionMetadata verbatim:
+        [{"Value":1,"Label":"Draft","Color":"#616161"}]
+    -->
+    <property name="options"
+              display-name-key="Options_Name"
+              description-key="Options_Desc"
+              of-type="Multiple"
+              usage="input"
+              required="false" />
+
+    <property name="selectionMode"
+              display-name-key="SelectionMode_Name"
+              description-key="SelectionMode_Desc"
+              of-type="Enum"
+              usage="input"
+              required="false"
+              default-value="auto">
+      <value name="auto" display-name-key="SelectionMode_Auto_Name">auto</value>
+      <value name="single" display-name-key="SelectionMode_Single_Name">single</value>
+      <value name="multiple" display-name-key="SelectionMode_Multiple_Name">multiple</value>
+    </property>
 
     <property name="layout"
               display-name-key="Layout_Name"
@@ -44,22 +81,8 @@
               required="false"
               default-value="pills">
       <value name="pills" display-name-key="Layout_Pills_Name">pills</value>
-      <value name="checkboxes" display-name-key="Layout_Checkboxes_Name">checkboxes</value>
+      <value name="list" display-name-key="Layout_List_Name">list</value>
     </property>
-
-    <!--
-      `attributes` is optional on the platform's own OptionSetProperty type
-      (`attributes?: OptionSetMetadata | undefined`), so a host that does not
-      supply column metadata leaves the picker with nothing to offer. This is
-      the escape hatch: `12:In progress, 34:Blocked` or a JSON array. It is also
-      what makes canvas usable, where choice metadata is not reliably present.
-    -->
-    <property name="options"
-              display-name-key="Options_Name"
-              description-key="Options_Desc"
-              of-type="SingleLine.Text"
-              usage="input"
-              required="false" />
 
     <property name="showColors"
               display-name-key="ShowColors_Name"
@@ -73,13 +96,26 @@
       <code path="index.ts" order="1" />
       <css path="css/ChoicesPicker.css" order="1" />
       <resx path="strings/ChoicesPicker.1033.resx" version="1.0.0" />
-      <platform-library name="React" version="16.8.6" />
+      <resx path="strings/ChoicesPicker.3082.resx" version="1.0.0" />
+      <resx path="strings/ChoicesPicker.1036.resx" version="1.0.0" />
+      <resx path="strings/ChoicesPicker.1031.resx" version="1.0.0" />
+      <resx path="strings/ChoicesPicker.1041.resx" version="1.0.0" />
+      <!--
+        Declared versions are floors, not exact requests: pcf-scripts maps
+        React 16.8–16.14.0 onto the platform's 16.14.0 build, and any Fluent 9
+        in 9.0.0–9.68.0 onto its 9.68.0 build. 16.14.0 is stated rather than
+        16.8.6 because @fluentui/react-components requires react >=16.14.0 and
+        npm will not install the pair otherwise.
+      -->
+      <platform-library name="React" version="16.14.0" />
+      <platform-library name="Fluent" version="9.46.2" />
     </resources>
 
     <!--
       No feature-usage on purpose. This control renders and writes back a bound
-      column and nothing else — no WebAPI, no device, no navigation — which is
-      what lets the hub run it as a full-fidelity demo.
+      column and nothing else — no WebAPI, no device, no navigation, no Utility.
+      That absence is what lets the hub run it as a full-fidelity demo, and each
+      entry here would also be a permission prompt for the maker installing it.
     -->
   </control>
 </manifest>
