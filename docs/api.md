@@ -14,7 +14,7 @@ order: 5
   the control. A hand-written table is wrong the first time somebody adds a
   property and forgets this file, and a reader has no way to tell.
 
-  There is no `kind=output` section: both `choice` and `choices` are `usage="bound"`,
+  There is no `kind=output` section: `value` is `usage="bound"`,
   so an output table would render empty, which reads as "no outputs" rather than
   as a missing directive.
 -->
@@ -29,26 +29,24 @@ order: 5
 
 ## Notes
 
-### Bind exactly one of `choice` and `choices`
+### One bound property
 
-`choice` takes a Choice column, `choices` a Multi-Select Choice column. The form
-designer only offers the control for a column matching one of them, so exactly
-one is bound and the other stays empty. The bound one is also the one written
-back.
+`value` is the control's only bound property. It uses a manifest **type group**
+accepting `OptionSet` and `MultiSelectOptionSet`, so one binding covers both
+column types and the control attaches to exactly one column.
 
 ### `selectionMode` resolution order
 
 `single` and `multiple` are absolute. `auto` resolves in this order, stopping at
 the first that answers:
 
-1. `choices` holds an array → **multiple**
-2. `choice` holds a number → **single**
-3. `choices` was described by the platform and `choice` was not → **multiple**
-4. Otherwise → **single**
+1. `value` holds an array → **multiple**
+2. The bound column's reported type names a multi-select → **multiple**
+3. Otherwise → **single**
 
-Steps 1 and 2 need a value, so an empty column falls to step 3. Set the property
-explicitly rather than relying on `auto` in a canvas app, where no column is
-described at all.
+Step 1 needs a value, so an empty column is answered by step 2 — the type the
+type group resolved to for that binding. Set the property explicitly in a canvas
+app, where there is no bound column to report a type at all.
 
 ### `options` format
 
@@ -74,8 +72,10 @@ metadata.
 
 ### What is written back
 
-`single` writes a number, `multiple` writes an array of numbers, and only the
-bound property is written — never both, since only one of them is bound.
+`single` writes a number and `multiple` writes an array of numbers, into the one
+bound column. Arity has to match the column — writing an array to a Choice
+column, or a bare number to a Multi-Select Choice column, hands the platform a
+value it cannot store.
 
 Emptying the selection writes an empty array in `multiple` mode. In `single`
 mode a radio cannot be unset by clicking it again, so the control shows a

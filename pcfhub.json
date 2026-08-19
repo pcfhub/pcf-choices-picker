@@ -43,8 +43,7 @@
         "description": "A Choice column shown as pills, with one option selected.",
         "isDefault": true,
         "props": {
-          "choice": 2,
-          "choices": null,
+          "value": 2,
           "options": "[{\"Value\":1,\"Label\":\"Draft\",\"Color\":\"#616161\"},{\"Value\":2,\"Label\":\"In review\",\"Color\":\"#0F6CBD\"},{\"Value\":3,\"Label\":\"Approved\",\"Color\":\"#107C10\"},{\"Value\":4,\"Label\":\"Rejected\",\"Color\":\"#C4314B\"}]",
           "selectionMode": "single",
           "layout": "pills",
@@ -56,8 +55,7 @@
         "name": "Multi-select",
         "description": "A Multi-Select Choice column, three of six selected.",
         "props": {
-          "choice": null,
-          "choices": [
+          "value": [
             1,
             3,
             5
@@ -73,8 +71,7 @@
         "name": "Stacked list",
         "description": "The same multi-select column as Fluent checkboxes instead of pills.",
         "props": {
-          "choice": null,
-          "choices": [
+          "value": [
             2,
             4
           ],
@@ -89,8 +86,7 @@
         "name": "Nothing selected",
         "description": "The empty state, with option colours switched off.",
         "props": {
-          "choice": null,
-          "choices": null,
+          "value": null,
           "options": "[{\"Value\":1,\"Label\":\"Draft\",\"Color\":\"#616161\"},{\"Value\":2,\"Label\":\"In review\",\"Color\":\"#0F6CBD\"},{\"Value\":3,\"Label\":\"Approved\",\"Color\":\"#107C10\"},{\"Value\":4,\"Label\":\"Rejected\",\"Color\":\"#C4314B\"}]",
           "selectionMode": "single",
           "layout": "pills",

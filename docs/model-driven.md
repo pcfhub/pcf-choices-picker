@@ -17,28 +17,27 @@ options, so there is nothing to declare.
 4. Save and publish.
 :::
 
-## Which property gets bound
+## One column, one binding
 
-The control declares two bound properties and exactly one of them is ever used:
+The control declares **a single bound property**, `value`, which accepts either
+a Choice or a Multi-Select Choice column. It attaches to the column you placed
+it on and asks you for nothing else — there is no second column picker in the
+configuration pane.
 
-| Column type | Bound property | Selection |
-| --- | --- | --- |
-| Choice | `choice` | One option |
-| Multi-Select Choice | `choices` | Any number of options |
-
-The form designer only offers the control for a column whose type matches, so
-you cannot bind the wrong one. Leave the other unbound.
+| Column type | Selection |
+| --- | --- |
+| Choice | One option |
+| Multi-Select Choice | Any number of options |
 
 ## Selection mode
 
-**Selection mode** defaults to *Automatic*, which reads whichever of the two
-columns is actually bound. It gets this right whenever the column has a value.
+**Selection mode** defaults to *Automatic* and takes single-or-multiple from the
+bound column itself, so it is normally correct with nothing configured.
 
-On an **empty** column of a record being created, there is no value to read
-from, and the control falls back to inspecting which property the platform
-described. In the rare case it guesses wrong — an empty multi-select column
-rendering as single-select — set **Selection mode** to *Multiple* explicitly.
-That setting always wins.
+It is an override, not a required setting. If a host ever reports the column
+type in a way the control does not recognise — the symptom is a multi-select
+column rendering as single-select, or the reverse — set **Selection mode** to
+*Single* or *Multiple* explicitly. That always wins.
 
 ## Option colours
 

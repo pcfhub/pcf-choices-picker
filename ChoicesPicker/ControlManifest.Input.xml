@@ -15,41 +15,41 @@
     <external-service-usage enabled="false" />
 
     <!--
-      Two optional bound properties rather than one `of-type-group`, which was
-      the first shape tried and is wrong for two independent reasons:
+      ONE bound property, accepting either kind of choice column.
 
-        1. `of-type-group` is model-driven only, so it would have cost canvas
-           support outright.
-        2. PCFHub flattens a type-group into a single `of_type` string —
-           `implode(' | ', ...)` in ControlManifestParser — so the published API
-           reference would read "OptionSet | MultiSelectOptionSet" and the demo
-           panel's editor inference would fall through to a plain text box.
+      This was two optional bound properties (`choice` of-type OptionSet and
+      `choices` of-type MultiSelectOptionSet) and that is wrong, as testing on a
+      real form showed: a field control binds its *first* bound property to the
+      column it is placed on, and every additional bound property renders as its
+      own column picker in the configuration pane. The maker therefore chose a
+      field and was then asked to choose a second one — for a control that
+      attaches to exactly one column.
 
-      Exactly one of these is ever bound: the platform only offers the control
-      for a column whose type matches, and a Choice column cannot satisfy
-      `choices` any more than a Multi-Select Choice column can satisfy `choice`.
-      `selectionMode` decides which one the code reads.
+      A type-group is the only shape that accepts both column types through a
+      single binding. It costs the specific generated type: pcf-scripts emits a
+      type-grouped property as the base `Property`, so `raw` is `any` and
+      `attributes` is the base `Metadata`. Both are narrowed at the boundary in
+      index.ts. That is a cost paid once, in one file, rather than a wrong
+      question asked of every maker.
     -->
-    <property name="choice"
-              display-name-key="Choice_Name"
-              description-key="Choice_Desc"
-              of-type="OptionSet"
-              usage="bound"
-              required="false" />
+    <type-group name="choicecolumn">
+      <type>OptionSet</type>
+      <type>MultiSelectOptionSet</type>
+    </type-group>
 
-    <property name="choices"
-              display-name-key="Choices_Name"
-              description-key="Choices_Desc"
-              of-type="MultiSelectOptionSet"
+    <property name="value"
+              display-name-key="Value_Name"
+              description-key="Value_Desc"
+              of-type-group="choicecolumn"
               usage="bound"
-              required="false" />
+              required="true" />
 
     <!--
       The option list. In a model-driven app the platform supplies it as
-      `<bound>.attributes.Options`; `attributes` is optional on the platform's
-      own property types, and in a canvas app there is no column metadata at
-      all, so this is the only source there. When non-empty it wins, so a maker
-      can relabel or narrow the choices without touching the column.
+      `value.attributes.Options`; `attributes` is optional on the platform's own
+      property types, and a host with no column metadata has none, so this is
+      the only source there. When non-empty it wins, so a maker can relabel or
+      narrow the choices without touching the column.
 
       Shape is ComponentFramework.PropertyHelper.OptionMetadata verbatim:
         [{"Value":1,"Label":"Draft","Color":"#616161"}]
@@ -61,6 +61,11 @@
               usage="input"
               required="false" />
 
+    <!--
+      Single or multiple is normally read off the bound column itself, since a
+      type-grouped property reports the type it actually resolved to. This is
+      the override for a host where that is not reliable.
+    -->
     <property name="selectionMode"
               display-name-key="SelectionMode_Name"
               description-key="SelectionMode_Desc"

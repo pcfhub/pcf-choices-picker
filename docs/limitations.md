@@ -26,11 +26,11 @@ the record that is not in the list simply shows as unselected.
 
 ## `Selection mode` on an empty column
 
-`auto` reads whichever bound column has a value. An empty column on a new record
-has none, so it falls back to inspecting which property the platform described.
-That is reliable on a real form and not reliable everywhere, so an empty
-multi-select column can render as single-select. Setting **Selection mode** to
-*Multiple* fixes it, and always wins.
+`auto` reads the bound column's value first, and an empty column has none — so
+it falls back to the type the manifest's type group resolved to for that
+binding. If a host reports that in a way the control does not recognise, an
+empty multi-select column can render as single-select. Setting **Selection mode**
+to *Multiple* fixes it, and always wins.
 
 ## Option colours only apply to pills
 
@@ -53,12 +53,14 @@ A radio, and a pill standing in for one, cannot be unset by clicking it again.
 The control shows a **Clear selection** link once a value is chosen. Multi-select
 needs no equivalent — unchecking the last option empties the column.
 
-## Not verified against a live environment
+## Canvas support is unconfirmed for the type group
 
-Version 0.1.0 builds, lints, and packs, and its behaviour is verified against
-the platform's own type definitions. It has **not** yet been imported into a
-Dataverse environment, so one thing remains a reading rather than an
-observation: whether the form designer offers a control declaring two *optional*
-bound properties for both a Choice and a Multi-Select Choice column. If it turns
-out to offer only one, a later version will split them. This is recorded in
-`SPEC.md` rather than hidden.
+The single bound property uses a manifest **type group**, which is what lets one
+binding accept both column types. Microsoft's property schema reference has been
+read as listing `of-type-group` under model-driven apps only; that has not been
+confirmed against a real canvas app here, and the toolchain imposes no such
+restriction.
+
+If a canvas app will not accept the control, that is the reason, and this page
+will say so plainly once it has been tested either way. Model-driven use is
+confirmed working.

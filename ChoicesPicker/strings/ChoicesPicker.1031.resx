@@ -43,14 +43,12 @@
   </resheader>
   <data name="ChoicesPicker_Name"><value>Auswahlfeld</value></data>
   <data name="ChoicesPicker_Desc"><value>Zeigt eine Auswahl- oder Mehrfachauswahlspalte als tastaturzugängliche Auswahl an.</value></data>
-  <data name="Choice_Name"><value>Auswahlspalte</value></data>
-  <data name="Choice_Desc"><value>Binden Sie diese an eine Auswahlspalte für Einfachauswahl. Lassen Sie sie ungebunden bei einer Mehrfachauswahlspalte.</value></data>
-  <data name="Choices_Name"><value>Mehrfachauswahlspalte</value></data>
-  <data name="Choices_Desc"><value>Binden Sie diese an eine Mehrfachauswahlspalte für Mehrfachauswahl. Lassen Sie sie ungebunden bei einer Auswahlspalte.</value></data>
+  <data name="Value_Name"><value>Auswahlspalte</value></data>
+  <data name="Value_Desc"><value>Die Auswahl- oder Mehrfachauswahlspalte, die dieses Steuerelement liest und schreibt.</value></data>
   <data name="Options_Name"><value>Optionen</value></data>
   <data name="Options_Desc"><value>Liefert die Optionsliste, wenn der Host keine Spaltenmetadaten hat, etwa in einer Canvas-App. Akzeptiert [{"Value":1,"Label":"Draft","Color":"#616161"}] oder "1:Entwurf, 2:In Prüfung". Überschreibt die Optionen der Spalte.</value></data>
   <data name="SelectionMode_Name"><value>Auswahlmodus</value></data>
-  <data name="SelectionMode_Desc"><value>Welche gebundene Spalte gelesen wird. Auf Automatisch belassen, sofern die Spalte nicht leer ist und das Steuerelement falsch rät.</value></data>
+  <data name="SelectionMode_Desc"><value>Erzwingt Einfach- oder Mehrfachauswahl. Auf Automatisch belassen, um sie aus der gebundenen Spalte zu übernehmen.</value></data>
   <data name="SelectionMode_Auto_Name"><value>Automatisch</value></data>
   <data name="SelectionMode_Single_Name"><value>Einfach</value></data>
   <data name="SelectionMode_Multiple_Name"><value>Mehrfach</value></data>

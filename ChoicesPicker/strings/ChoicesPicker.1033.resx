@@ -43,14 +43,12 @@
   </resheader>
   <data name="ChoicesPicker_Name"><value>Choices Picker</value></data>
   <data name="ChoicesPicker_Desc"><value>Shows a Choice or Multi-Select Choice column as a keyboard-accessible picker.</value></data>
-  <data name="Choice_Name"><value>Choice column</value></data>
-  <data name="Choice_Desc"><value>Bind this to a Choice column for single selection. Leave it unbound when using a Multi-Select Choice column.</value></data>
-  <data name="Choices_Name"><value>Multi-select choice column</value></data>
-  <data name="Choices_Desc"><value>Bind this to a Multi-Select Choice column for multiple selection. Leave it unbound when using a Choice column.</value></data>
+  <data name="Value_Name"><value>Choice column</value></data>
+  <data name="Value_Desc"><value>The Choice or Multi-Select Choice column this picker reads and writes.</value></data>
   <data name="Options_Name"><value>Options</value></data>
   <data name="Options_Desc"><value>Supplies the option list where the host has no column metadata, such as a canvas app. Accepts [{"Value":1,"Label":"Draft","Color":"#616161"}] or "1:Draft, 2:In review". Overrides the column’s own options when set.</value></data>
   <data name="SelectionMode_Name"><value>Selection mode</value></data>
-  <data name="SelectionMode_Desc"><value>Which bound column to read. Leave on Automatic unless the column is empty and the control guesses wrong.</value></data>
+  <data name="SelectionMode_Desc"><value>Override single or multiple selection. Leave on Automatic to take it from the bound column.</value></data>
   <data name="SelectionMode_Auto_Name"><value>Automatic</value></data>
   <data name="SelectionMode_Single_Name"><value>Single</value></data>
   <data name="SelectionMode_Multiple_Name"><value>Multiple</value></data>

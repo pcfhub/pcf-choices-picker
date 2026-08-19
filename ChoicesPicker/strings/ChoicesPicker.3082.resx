@@ -43,14 +43,12 @@
   </resheader>
   <data name="ChoicesPicker_Name"><value>Selector de opciones</value></data>
   <data name="ChoicesPicker_Desc"><value>Muestra una columna de opción o de opciones múltiples como un selector accesible con el teclado.</value></data>
-  <data name="Choice_Name"><value>Columna de opción</value></data>
-  <data name="Choice_Desc"><value>Enlácela a una columna de opción para selección única. Déjela sin enlazar si usa una columna de opciones múltiples.</value></data>
-  <data name="Choices_Name"><value>Columna de opciones múltiples</value></data>
-  <data name="Choices_Desc"><value>Enlácela a una columna de opciones múltiples para selección múltiple. Déjela sin enlazar si usa una columna de opción.</value></data>
+  <data name="Value_Name"><value>Columna de opción</value></data>
+  <data name="Value_Desc"><value>La columna de opción o de opciones múltiples que este selector lee y escribe.</value></data>
   <data name="Options_Name"><value>Opciones</value></data>
   <data name="Options_Desc"><value>Proporciona la lista de opciones cuando el host no tiene metadatos de columna, como en una aplicación de lienzo. Acepta [{"Value":1,"Label":"Draft","Color":"#616161"}] o "1:Borrador, 2:En revisión". Tiene prioridad sobre las opciones de la columna.</value></data>
   <data name="SelectionMode_Name"><value>Modo de selección</value></data>
-  <data name="SelectionMode_Desc"><value>Qué columna enlazada leer. Déjelo en Automático salvo que la columna esté vacía y el control no acierte.</value></data>
+  <data name="SelectionMode_Desc"><value>Fuerza selección única o múltiple. Déjelo en Automático para tomarlo de la columna enlazada.</value></data>
   <data name="SelectionMode_Auto_Name"><value>Automático</value></data>
   <data name="SelectionMode_Single_Name"><value>Única</value></data>
   <data name="SelectionMode_Multiple_Name"><value>Múltiple</value></data>

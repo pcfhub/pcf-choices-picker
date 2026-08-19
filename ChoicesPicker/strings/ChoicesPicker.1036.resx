@@ -43,14 +43,12 @@
   </resheader>
   <data name="ChoicesPicker_Name"><value>Sélecteur de choix</value></data>
   <data name="ChoicesPicker_Desc"><value>Affiche une colonne de choix ou de choix multiples sous forme de sélecteur accessible au clavier.</value></data>
-  <data name="Choice_Name"><value>Colonne de choix</value></data>
-  <data name="Choice_Desc"><value>Liez-la à une colonne de choix pour une sélection unique. Laissez-la non liée pour une colonne de choix multiples.</value></data>
-  <data name="Choices_Name"><value>Colonne de choix multiples</value></data>
-  <data name="Choices_Desc"><value>Liez-la à une colonne de choix multiples pour une sélection multiple. Laissez-la non liée pour une colonne de choix.</value></data>
+  <data name="Value_Name"><value>Colonne de choix</value></data>
+  <data name="Value_Desc"><value>La colonne de choix ou de choix multiples que ce sélecteur lit et écrit.</value></data>
   <data name="Options_Name"><value>Options</value></data>
   <data name="Options_Desc"><value>Fournit la liste des options lorsque l’hôte n’a pas de métadonnées de colonne, comme dans une application canevas. Accepte [{"Value":1,"Label":"Draft","Color":"#616161"}] ou "1:Brouillon, 2:En revue". Prioritaire sur les options de la colonne.</value></data>
   <data name="SelectionMode_Name"><value>Mode de sélection</value></data>
-  <data name="SelectionMode_Desc"><value>Quelle colonne liée lire. Laissez sur Automatique sauf si la colonne est vide et que le contrôle se trompe.</value></data>
+  <data name="SelectionMode_Desc"><value>Force une sélection unique ou multiple. Laissez sur Automatique pour la déduire de la colonne liée.</value></data>
   <data name="SelectionMode_Auto_Name"><value>Automatique</value></data>
   <data name="SelectionMode_Single_Name"><value>Unique</value></data>
   <data name="SelectionMode_Multiple_Name"><value>Multiple</value></data>

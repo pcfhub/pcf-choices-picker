@@ -3,24 +3,31 @@ import { IInputs } from '../generated/ManifestTypes';
 export type SelectionMode = 'single' | 'multiple';
 
 type OptionMetadata = ComponentFramework.PropertyHelper.OptionMetadata;
+type OptionSetMetadata = ComponentFramework.PropertyHelper.FieldPropertyMetadata.OptionSetMetadata;
 
 /**
- * Which of the two bound properties is live.
+ * The bound property is type-grouped, so pcf-scripts types it as the base
+ * `Property` — `raw: any`, `attributes` as the base `Metadata` without
+ * `Options`. Both narrowings live here rather than being repeated at each use.
+ */
+export function boundValue(context: ComponentFramework.Context<IInputs>): ComponentFramework.PropertyTypes.Property {
+    return context.parameters.value;
+}
+
+/**
+ * Single or multiple, resolved from the column the maker actually bound.
  *
- * `selectionMode` is honoured first because it is the only answer that cannot
- * be wrong. The `auto` ladder below is a convenience, and it is ordered by how
- * much each signal actually proves:
+ * `selectionMode` wins when set, because it is the only answer that cannot be
+ * wrong. Otherwise:
  *
- *   1. A non-null `raw` is proof — only a bound column has a value.
- *   2. `attributes` is present only where the platform has a column to describe
- *      it from, so on a real form the unbound property has none. This is the
- *      signal that resolves an *empty* column, which `raw` cannot.
- *   3. Single, because a Choice column is the commoner case and picking wrong
- *      here shows the right options with the wrong arity rather than nothing.
- *
- * Step 2 does not discriminate inside the hub's demo harness, which fabricates
- * `attributes` for every declared property — which is why every demo preset
- * sets `selectionMode` explicitly instead of relying on `auto`.
+ *   1. An array `raw` is proof of a multi-select column — only that arity
+ *      produces one.
+ *   2. `type` carries the type the type-group resolved to for this binding,
+ *      which is the signal that still works on an *empty* column, where `raw`
+ *      is null either way. Matched loosely because the exact spelling is the
+ *      platform's to choose, and only one of the two members contains "multi".
+ *   3. Single, because a Choice column is the commoner case and guessing wrong
+ *      shows the right options with the wrong arity rather than nothing at all.
  */
 export function resolveMode(context: ComponentFramework.Context<IInputs>): SelectionMode {
     const declared = context.parameters.selectionMode.raw;
@@ -29,21 +36,22 @@ export function resolveMode(context: ComponentFramework.Context<IInputs>): Selec
         return declared;
     }
 
-    const { choice, choices } = context.parameters;
+    const property = boundValue(context);
 
-    if (Array.isArray(choices.raw)) {
+    if (Array.isArray(property.raw)) {
         return 'multiple';
     }
 
-    if (typeof choice.raw === 'number') {
-        return 'single';
+    return /multi/i.test(property.type ?? '') ? 'multiple' : 'single';
+}
+
+/** Normalise either arity to an array, so the rest of the control has one shape. */
+export function toSelection(raw: unknown): number[] {
+    if (Array.isArray(raw)) {
+        return raw.filter((entry): entry is number => typeof entry === 'number');
     }
 
-    if (choices.attributes && !choice.attributes) {
-        return 'multiple';
-    }
-
-    return 'single';
+    return typeof raw === 'number' ? [raw] : [];
 }
 
 /**
@@ -51,11 +59,11 @@ export function resolveMode(context: ComponentFramework.Context<IInputs>): Selec
  * column's own metadata.
  *
  * The override wins when set so a maker can relabel or narrow the list per
- * form. It is also the only source that exists in a canvas app and in the hub's
- * demo harness — the harness's `baseAttributes()` returns `DisplayName`,
- * `LogicalName`, `Description`, `IsSecured`, `SourceType` and `RequiredLevel`
- * and no `Options` at all, so a control that read metadata alone would render
- * an empty picker in its own demo.
+ * form. It is also the only source that exists in a host without column
+ * metadata and in the hub's demo harness — the harness's `baseAttributes()`
+ * returns `DisplayName`, `LogicalName`, `Description`, `IsSecured`,
+ * `SourceType` and `RequiredLevel` and no `Options` at all, so a control that
+ * read metadata alone would render an empty picker in its own demo.
  */
 export function resolveOptions(context: ComponentFramework.Context<IInputs>): OptionMetadata[] {
     const override = parseOptions(context.parameters.options.raw);
@@ -64,11 +72,9 @@ export function resolveOptions(context: ComponentFramework.Context<IInputs>): Op
         return override;
     }
 
-    return (
-        context.parameters.choices.attributes?.Options ??
-        context.parameters.choice.attributes?.Options ??
-        []
-    );
+    const attributes = boundValue(context).attributes as OptionSetMetadata | undefined;
+
+    return attributes?.Options ?? [];
 }
 
 /**

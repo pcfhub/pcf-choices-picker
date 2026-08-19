@@ -16,7 +16,6 @@ called *Status* with four options, each given a colour in Dataverse.
 | Property | Value |
 | --- | --- |
 | Choice column | `Status` |
-| Multi-select choice column | *(leave unbound)* |
 | Options | *(leave empty)* |
 | Selection mode | Automatic |
 | Layout | Pills |
@@ -32,8 +31,7 @@ once.
 
 | Property | Value |
 | --- | --- |
-| Choice column | *(leave unbound)* |
-| Multi-select choice column | `Skills` |
+| Choice column | `Skills` |
 | Options | *(leave empty)* |
 | Selection mode | Automatic |
 | Layout | Pills |
@@ -49,7 +47,7 @@ gains. The stacked list renders Fluent checkboxes in a column instead.
 
 | Property | Value |
 | --- | --- |
-| Multi-select choice column | `Regions` |
+| Choice column | `Regions` |
 | Layout | Stacked list |
 | Use option colours | No |
 

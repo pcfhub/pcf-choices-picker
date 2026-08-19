@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { IInputs, IOutputs } from './generated/ManifestTypes';
 import { ChoicesPickerControl, IProps } from './components/ChoicesPickerControl';
-import { resolveMode, resolveOptions, SelectionMode } from './components/resolve';
+import { boundValue, resolveMode, resolveOptions, toSelection, SelectionMode } from './components/resolve';
 
 type Theme = Record<string, string>;
 
@@ -10,9 +10,10 @@ type Theme = Record<string, string>;
  * rather than mutating a container, so the platform owns reconciliation and
  * React and Fluent stay out of the bundle entirely.
  *
- * The control binds either a Choice column (`choice`) or a Multi-Select Choice
- * column (`choices`) — never both, since the platform only offers it for a
- * column whose type matches one of them.
+ * It binds exactly one column, which may be a Choice or a Multi-Select Choice
+ * column — one type-grouped bound property rather than two, because a field
+ * control renders every bound property beyond the first as an extra column
+ * picker in the maker's configuration pane.
  */
 export class ChoicesPicker implements ComponentFramework.ReactControl<IInputs, IOutputs> {
     private notifyOutputChanged!: () => void;
@@ -27,19 +28,15 @@ export class ChoicesPicker implements ComponentFramework.ReactControl<IInputs, I
     }
 
     public updateView(context: ComponentFramework.Context<IInputs>): React.ReactElement {
-        const { choice, choices } = context.parameters;
+        const property = boundValue(context);
 
         this.mode = resolveMode(context);
-        this.selected = this.mode === 'multiple'
-            ? choices.raw ?? []
-            : choice.raw === null ? [] : [choice.raw];
-
-        const bound = this.mode === 'multiple' ? choices : choice;
+        this.selected = toSelection(property.raw);
 
         // `security` is absent on hosts that do not apply column-level security,
         // so it is read defensively rather than assumed — and a column the user
         // may not read is masked rather than merely disabled.
-        const disabled = context.mode.isControlDisabled || bound.security?.editable === false;
+        const disabled = context.mode.isControlDisabled || property.security?.editable === false;
 
         const props: IProps = {
             options: resolveOptions(context),
@@ -48,8 +45,8 @@ export class ChoicesPicker implements ComponentFramework.ReactControl<IInputs, I
             layout: context.parameters.layout.raw ?? 'pills',
             showColors: context.parameters.showColors.raw ?? true,
             disabled,
-            masked: bound.security?.readable === false,
-            label: bound.attributes?.DisplayName ?? '',
+            masked: property.security?.readable === false,
+            label: property.attributes?.DisplayName ?? '',
             theme: resolveTheme(context),
             getString: (id: string): string => context.resources.getString(id),
             onChange: this.onChange,
@@ -64,16 +61,20 @@ export class ChoicesPicker implements ComponentFramework.ReactControl<IInputs, I
     };
 
     /**
-     * Only the property that is actually bound is returned. Emitting both keys
-     * would ask the platform to write `null` into a column this control is not
-     * bound to.
+     * Arity has to match the column: a Multi-Select Choice column stores an
+     * array of values and a Choice column a bare number. Writing the wrong one
+     * hands the platform a value it cannot store.
+     *
+     * `IOutputs.value` is `any` because the property is type-grouped — the
+     * generated type cannot know which arity a given binding resolved to, so
+     * this method is where that is decided.
      */
     public getOutputs(): IOutputs {
         if (this.mode === 'multiple') {
-            return { choices: this.selected };
+            return { value: this.selected };
         }
 
-        return { choice: this.selected.length > 0 ? this.selected[0] : undefined };
+        return { value: this.selected.length > 0 ? this.selected[0] : undefined };
     }
 
     public destroy(): void {

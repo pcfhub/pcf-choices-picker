@@ -43,14 +43,12 @@
   </resheader>
   <data name="ChoicesPicker_Name"><value>選択肢ピッカー</value></data>
   <data name="ChoicesPicker_Desc"><value>選択肢列または複数選択肢列をキーボード操作可能なピッカーとして表示します。</value></data>
-  <data name="Choice_Name"><value>選択肢列</value></data>
-  <data name="Choice_Desc"><value>単一選択には選択肢列にバインドします。複数選択肢列を使う場合は未バインドのままにします。</value></data>
-  <data name="Choices_Name"><value>複数選択肢列</value></data>
-  <data name="Choices_Desc"><value>複数選択には複数選択肢列にバインドします。選択肢列を使う場合は未バインドのままにします。</value></data>
+  <data name="Value_Name"><value>選択肢列</value></data>
+  <data name="Value_Desc"><value>このピッカーが読み書きする選択肢列または複数選択肢列。</value></data>
   <data name="Options_Name"><value>選択肢</value></data>
   <data name="Options_Desc"><value>キャンバスアプリなど、ホストに列メタデータがない場合に選択肢一覧を供給します。[{"Value":1,"Label":"Draft","Color":"#616161"}] または "1:下書き, 2:レビュー中" 形式。設定すると列の選択肢より優先されます。</value></data>
   <data name="SelectionMode_Name"><value>選択モード</value></data>
-  <data name="SelectionMode_Desc"><value>どのバインド列を読み取るか。列が空で推定を誤る場合を除き、自動のままにします。</value></data>
+  <data name="SelectionMode_Desc"><value>単一選択か複数選択かを上書きします。自動のままにするとバインド列から判定します。</value></data>
   <data name="SelectionMode_Auto_Name"><value>自動</value></data>
   <data name="SelectionMode_Single_Name"><value>単一</value></data>
   <data name="SelectionMode_Multiple_Name"><value>複数</value></data>

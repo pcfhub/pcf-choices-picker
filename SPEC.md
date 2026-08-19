@@ -18,7 +18,44 @@ carrying `aria-pressed`) or as a stacked list (Fluent `Checkbox` /
 `RadioGroup` + `Radio`). Option labels and colours come from the column's own
 metadata, or from an `options` input property where the host has none.
 
-## `of-type-group` was the first shape, and it was wrong
+## Two bound properties asked the maker a second question
+
+**Reported from a real environment:** configure the control on a form, pick the
+column, and the configuration pane then offers *another* column picker — for a
+control that attaches to exactly one column.
+
+The cause is not subtle once seen. A field control binds its **first** bound
+property to the column it is placed on; every additional bound property is
+rendered as its own column picker in the configuration pane. Declaring `choice`
+(`OptionSet`) and `choices` (`MultiSelectOptionSet`) side by side therefore
+guarantees a spurious second selector, whatever `required` says.
+
+So the shape is back to a single type-grouped bound property — the arrangement
+the section below records rejecting. The reasoning there was not wrong, it was
+mis-weighted: those costs are a cast in one file and a cosmetic string on the
+hub's API reference, while this one is a wrong question asked of every maker who
+configures the control. The maker experience wins.
+
+What changed with it:
+
+- `selectionMode: auto` no longer picks *between* two properties. It reads the
+  bound value's arity, then the type the type group resolved to — which is the
+  signal that still works on an empty column. It stays as an override.
+- `getOutputs()` returns a number or an array under one `value` key, decided by
+  the resolved mode, because `IOutputs.value` is `any` for a type-grouped
+  property.
+- The `Choice_*` / `Choices_*` resource strings collapsed into `Value_*`, and the
+  demo presets now set one `value` instead of two keys.
+
+**Now unverified, and it was verified before:** whether a canvas app accepts a
+type-grouped property. Microsoft's schema reference has been read as listing
+`of-type-group` under model-driven apps only. Nothing in `pcf-scripts` enforces
+that — its only type-group diagnostic is "references a non-existent
+`<type-group>`" — and it has not been tested against a real canvas app. The
+trade was made knowing this: a confirmed model-driven defect outweighs an
+unconfirmed canvas restriction. Test it before promising canvas support.
+
+## Why the first attempt at `of-type-group` was rejected
 
 The manifest originally used a type-group to accept both column types through
 one bound property:
@@ -31,8 +68,10 @@ one bound property:
 <property name="value" of-type-group="choice" usage="bound" required="true" />
 ```
 
-It built. It was still wrong, for three separate reasons, two of them
-verifiable in this repository:
+It built, and it is what the control ships with today — but not before being
+rejected for the three reasons below and then reinstated. They are kept because
+two of them are real costs the control still pays, and the third turned out to
+be weaker evidence than it was treated as:
 
 1. **It erases the property type.** `npm run refreshTypes` generated
    `value: ComponentFramework.PropertyTypes.Property` — the *base* interface,
@@ -46,18 +85,18 @@ verifiable in this repository:
    would have read `OptionSet | MultiSelectOptionSet` as the property's type,
    and the demo panel's editor inference would have fallen through to a plain
    text box.
-3. **It is model-driven only.** `of-type-group` is not available to canvas apps,
-   while `of-type="OptionSet"` and `of-type="MultiSelectOptionSet"` both are —
-   so the type-group would have cost canvas support outright.
+3. **It is said to be model-driven only.** This was the reason that actually
+   decided it, and it is the weakest of the three: a reading of Microsoft's
+   property schema reference, taken second-hand and never confirmed against a
+   canvas app. `pcf-scripts` enforces nothing of the kind — its only type-group
+   diagnostic is "references a non-existent `<type-group>`".
 
-Now two optional bound properties, `choice` and `choices`, of which the platform
-only ever offers the one matching the column's type.
+Costs 1 and 2 are real and the control pays them: `resolve.ts` casts
+`attributes` to `OptionSetMetadata` and `index.ts` decides the output arity,
+both in one place; the hub's API reference will show the flattened type string.
 
-**Still unverified:** whether the form designer offers a control declaring two
-*optional* bound properties for both column types. Microsoft's own samples all
-use exactly one `required="true"` bound property. If it turns out only one is
-offered, the fallback is to ship `choices` alone and add `choice` later. This is
-a reading, not an observation — there is no environment to import into here.
+Cost 3 remains genuinely open. It should have been labelled that way from the
+start rather than being allowed to outweigh a maker-facing defect.
 
 ## `control.type` is `virtual`, not `field`
 
