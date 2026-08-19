@@ -61,4 +61,5 @@
   <data name="NoOptions"><value>No options are available for this column.</value></data>
   <data name="Masked"><value>You do not have permission to view this value.</value></data>
   <data name="Clear"><value>Clear selection</value></data>
+  <data name="OverLimit"><value>This record holds more than one choice, but the field now allows only one. Remove options until one remains.</value></data>
 </root>

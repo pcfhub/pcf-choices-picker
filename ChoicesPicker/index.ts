@@ -47,6 +47,11 @@ export class ChoicesPicker implements ComponentFramework.ReactControl<IInputs, I
         this.mode = resolveMode(context);
         this.storesArray = writesArray(property, this.mode);
 
+        // Everything the column holds, even when that is more than the current
+        // mode allows. A Multi-Select Choice column limited to a single choice
+        // after the fact still contains whatever was stored before, and showing
+        // one of three values would misrepresent the record — the reconciling
+        // state in ChoicesPickerControl handles reducing it.
         this.selected = toSelection(property.raw);
 
         // `security` is absent on hosts that do not apply column-level security,

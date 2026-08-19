@@ -61,4 +61,5 @@
   <data name="NoOptions"><value>この列に利用できる選択肢がありません。</value></data>
   <data name="Masked"><value>この値を表示する権限がありません。</value></data>
   <data name="Clear"><value>選択をクリア</value></data>
+  <data name="OverLimit"><value>このレコードには複数の選択肢が保存されていますが、現在この項目は 1 件のみ許可されています。1 件になるまで選択肢を削除してください。</value></data>
 </root>

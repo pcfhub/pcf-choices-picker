@@ -6,7 +6,7 @@ import {
     RadioGroup,
     webLightTheme,
 } from '@fluentui/react-components';
-import { SelectionMode } from './resolve';
+import { isOverLimit, nextSelection, SelectionMode } from './resolve';
 
 type OptionMetadata = ComponentFramework.PropertyHelper.OptionMetadata;
 
@@ -64,20 +64,22 @@ export function ChoicesPickerControl(props: IProps): React.ReactElement {
 
     const toggle = React.useCallback(
         (value: number): void => {
-            if (mode === 'single') {
-                commit([value]);
+            const next = nextSelection(mode, selected, value);
 
-                return;
+            // `null` means the control refuses this interaction — adding a
+            // value while still reducing legacy over-selection. Nothing changes
+            // and nothing is written.
+            if (next !== null) {
+                commit(next);
             }
-
-            commit(
-                selected.includes(value)
-                    ? selected.filter((entry) => entry !== value)
-                    : [...selected, value],
-            );
         },
         [commit, mode, selected],
     );
+
+    // A Multi-Select Choice column can already hold several values when the
+    // control is later limited to one. The record is not wrong, so it is shown
+    // in full and the user reduces it; only adding is blocked meanwhile.
+    const overLimit = isOverLimit(mode, selected);
 
     const theme = props.theme ?? webLightTheme;
 
@@ -100,12 +102,22 @@ export function ChoicesPickerControl(props: IProps): React.ReactElement {
     return (
         <FluentProvider theme={theme}>
             <div className={`ChoicesPicker ChoicesPicker-${layout}`}>
+                {/*
+                  Radios cannot represent several selected values, so while the
+                  record still holds more than one the stacked layout falls back
+                  to checkboxes. It returns to radios once one remains.
+                */}
                 {layout === 'pills'
                     ? renderPills()
-                    : mode === 'single'
+                    : mode === 'single' && !overLimit
                       ? renderRadios()
                       : renderCheckboxes()}
                 {renderClear()}
+                {overLimit ? (
+                    <div className="ChoicesPicker-notice" role="status">
+                        {getString('OverLimit')}
+                    </div>
+                ) : null}
             </div>
         </FluentProvider>
     );
@@ -139,7 +151,11 @@ export function ChoicesPickerControl(props: IProps): React.ReactElement {
                     className={`ChoicesPicker-pill${isSelected ? ' is-selected' : ''}`}
                     aria-pressed={isSelected}
                     aria-label={label ? `${label}: ${option.Label}` : option.Label}
-                    disabled={disabled}
+                    // While reducing legacy over-selection, only the values
+                    // already chosen stay interactive — the rest are disabled
+                    // rather than silently ignored, so the restriction is
+                    // visible instead of being discovered by clicking.
+                    disabled={disabled || (overLimit && !isSelected)}
                     style={style}
                     onClick={() => toggle(option.Value)}
                 >
@@ -184,14 +200,18 @@ export function ChoicesPickerControl(props: IProps): React.ReactElement {
     }
 
     function renderCheckboxes(): React.ReactElement[] {
-        return options.map((option) => (
-            <Checkbox
-                key={option.Value}
-                label={option.Label}
-                checked={selected.includes(option.Value)}
-                disabled={disabled}
-                onChange={() => toggle(option.Value)}
-            />
-        ));
+        return options.map((option) => {
+            const isSelected = selected.includes(option.Value);
+
+            return (
+                <Checkbox
+                    key={option.Value}
+                    label={option.Label}
+                    checked={isSelected}
+                    disabled={disabled || (overLimit && !isSelected)}
+                    onChange={() => toggle(option.Value)}
+                />
+            );
+        });
     }
 }

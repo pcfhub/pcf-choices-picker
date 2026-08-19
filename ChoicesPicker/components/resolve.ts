@@ -120,6 +120,53 @@ export function resolveMode(context: ComponentFramework.Context<IInputs>): Selec
 }
 
 /**
+ * Whether the control is showing more selections than its mode allows.
+ *
+ * This is legacy data, not a bug: a Multi-Select Choice column can already hold
+ * several values when a maker later limits the control to a single choice. The
+ * record is not wrong — the configuration changed under it.
+ */
+export function isOverLimit(mode: SelectionMode, selected: number[]): boolean {
+    return mode === 'single' && selected.length > 1;
+}
+
+/**
+ * What the selection becomes when the user activates `value`, or `null` when
+ * the control should refuse the interaction and change nothing.
+ *
+ * Pure, and separate from the component, because the single-select rules are
+ * where the interesting behaviour lives:
+ *
+ * - **Multiple** — a plain toggle.
+ * - **Single, over limit** — the reconciling state. Existing values can be
+ *   removed, and nothing new can be added, so the user walks the record down to
+ *   one choice without the control ever discarding a value on their behalf.
+ * - **Single, at limit** — picking a different option replaces the current one.
+ *   Activating the option already chosen does nothing; emptying the column is
+ *   the Clear affordance's job, so that a radio and a pill behave alike.
+ */
+export function nextSelection(
+    mode: SelectionMode,
+    selected: number[],
+    value: number,
+): number[] | null {
+    const isSelected = selected.includes(value);
+
+    if (mode === 'multiple') {
+        return isSelected ? selected.filter((entry) => entry !== value) : [...selected, value];
+    }
+
+    if (isSelected) {
+        // Only meaningful while reducing legacy data; otherwise Clear handles it.
+        return isOverLimit(mode, selected) ? selected.filter((entry) => entry !== value) : null;
+    }
+
+    // Refuse to add a value that would have to displace several others. Which
+    // of them to drop is not the control's decision to make silently.
+    return isOverLimit(mode, selected) ? null : [value];
+}
+
+/**
  * Whether the bound column expects an array written back to it.
  *
  * Deliberately *not* the same as the selection mode. A Multi-Select Choice

@@ -61,4 +61,5 @@
   <data name="NoOptions"><value>Aucune option n’est disponible pour cette colonne.</value></data>
   <data name="Masked"><value>Vous n’avez pas l’autorisation d’afficher cette valeur.</value></data>
   <data name="Clear"><value>Effacer la sélection</value></data>
+  <data name="OverLimit"><value>Cet enregistrement contient plusieurs choix, mais le champ n’en autorise plus qu’un. Retirez des options jusqu’à ce qu’il n’en reste qu’une.</value></data>
 </root>

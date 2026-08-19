@@ -87,3 +87,14 @@
     outline: 2px solid var(--colorStrokeFocus2, #000000);
     outline-offset: 2px;
 }
+
+/*
+ * Shown only while a record still holds more choices than the field now
+ * allows. `flex-basis: 100%` puts it on its own row under the wrapped pills
+ * rather than inline among them.
+ */
+.ChoicesPicker-notice {
+    flex-basis: 100%;
+    color: var(--colorNeutralForeground3, #616161);
+    font-size: var(--fontSizeBase200, 12px);
+}

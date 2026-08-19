@@ -61,4 +61,5 @@
   <data name="NoOptions"><value>No hay opciones disponibles para esta columna.</value></data>
   <data name="Masked"><value>No tiene permiso para ver este valor.</value></data>
   <data name="Clear"><value>Borrar selección</value></data>
+  <data name="OverLimit"><value>Este registro contiene más de una opción, pero el campo ahora solo admite una. Quite opciones hasta que quede una.</value></data>
 </root>

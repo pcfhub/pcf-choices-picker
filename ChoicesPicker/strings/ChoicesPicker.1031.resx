@@ -61,4 +61,5 @@
   <data name="NoOptions"><value>Für diese Spalte sind keine Optionen verfügbar.</value></data>
   <data name="Masked"><value>Sie haben keine Berechtigung, diesen Wert anzuzeigen.</value></data>
   <data name="Clear"><value>Auswahl löschen</value></data>
+  <data name="OverLimit"><value>Dieser Datensatz enthält mehrere Auswahlen, das Feld lässt jetzt aber nur eine zu. Entfernen Sie Optionen, bis eine übrig bleibt.</value></data>
 </root>
