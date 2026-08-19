@@ -18,6 +18,40 @@ carrying `aria-pressed`) or as a stacked list (Fluent `Checkbox` /
 `RadioGroup` + `Radio`). Option labels and colours come from the column's own
 metadata, or from an `options` input property where the host has none.
 
+## A loose `type` match made every column multi-select
+
+**Reported from a model-driven form:** an `OptionSet` (single) column, with
+Selection mode left on Automatic, rendered as a multi-select.
+
+`resolveMode()` fell back to `/multi/i.test(property.type)` when the value was
+null. The comment defending it said "only one of the two members contains
+'multi'" — true of a member name, and not true of what the platform actually
+reports for a **type-grouped** property, which is the group's accepted types.
+That string names `MultiSelectOptionSet` whichever column is bound, so the test
+matched always.
+
+Fixed by leading with the value's own shape, which is proof rather than
+inference, and comparing `type` **exactly**:
+
+1. `raw` is an array → multiple (an empty multi-select still reports `[]`)
+2. `raw` is a number → single
+3. `type === 'MultiSelectOptionSet'` → multiple
+4. otherwise → single
+
+Exact comparison is right whichever way a host behaves: a definitive member name
+is honoured, and the group string matches neither and falls through to the
+default. The remaining undetectable case — a multi-select column with `null`
+rather than `[]` on a host reporting the group string — resolves to single and
+needs the `selectionMode` override, which is what it is for.
+
+Verified by compiling `resolve.ts` and running ten bindings through it, covering
+both spellings of `type`, both arities, empty and populated, and the override.
+The old expression was confirmed to return `multiple` for the reported binding.
+
+A lesson worth keeping: a substring test on a platform-supplied type string is a
+guess about a format nobody documented. Compare exactly, and let the value's own
+shape answer first.
+
 ## Two bound properties asked the maker a second question
 
 **Reported from a real environment:** configure the control on a form, pick the

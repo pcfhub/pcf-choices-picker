@@ -41,12 +41,24 @@ column types and the control attaches to exactly one column.
 the first that answers:
 
 1. `value` holds an array → **multiple**
-2. The bound column's reported type names a multi-select → **multiple**
-3. Otherwise → **single**
+2. `value` holds a number → **single**
+3. The bound column reports its type as exactly `MultiSelectOptionSet` → **multiple**
+4. Otherwise → **single**
 
-Step 1 needs a value, so an empty column is answered by step 2 — the type the
-type group resolved to for that binding. Set the property explicitly in a canvas
-app, where there is no bound column to report a type at all.
+Steps 1 and 2 are proof: only a multi-select column produces an array, only a
+single-select one a bare number. An empty multi-select column normally still
+reports `[]`, so it is answered by step 1.
+
+Step 3 compares the reported type **exactly**, never as a substring. For a
+type-grouped property some hosts report the group's accepted types rather than
+the resolved member — a string naming both — and a loose match on it would call
+every column multi-select.
+
+That leaves one case `auto` cannot answer: a multi-select column whose value is
+`null` rather than `[]` on a host that reports the group string. It resolves to
+`single`. Set **Selection mode** to *Multiple* there; the explicit setting always
+wins. Set it explicitly in a canvas app too, where there is no bound column to
+report a type at all.
 
 ### `options` format
 

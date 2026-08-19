@@ -38,11 +38,41 @@ export function resolveMode(context: ComponentFramework.Context<IInputs>): Selec
 
     const property = boundValue(context);
 
+    // The value's own shape is proof: only a multi-select column produces an
+    // array, and only a single-select one a bare number. An empty multi-select
+    // column normally still reports `[]`, so this answers most empty columns
+    // too.
     if (Array.isArray(property.raw)) {
         return 'multiple';
     }
 
-    return /multi/i.test(property.type ?? '') ? 'multiple' : 'single';
+    if (typeof property.raw === 'number') {
+        return 'single';
+    }
+
+    // `type` is matched exactly, never as a substring.
+    //
+    // This previously tested /multi/i and got single-select columns wrong on
+    // every model-driven form: for a type-grouped property the platform does
+    // not report the resolved member here, it reports the group's accepted
+    // types — a string that contains "MultiSelectOptionSet" whichever column is
+    // actually bound. So the loose test matched always, and an OptionSet column
+    // rendered as multi-select.
+    //
+    // Exact comparison is right whether the host names the resolved member or
+    // the whole group: a definitive name is honoured, and the group string
+    // matches neither and falls through.
+    const type = (property.type ?? '').trim();
+
+    if (type === 'MultiSelectOptionSet') {
+        return 'multiple';
+    }
+
+    // Single by default. It is the commoner column, it is what an ambiguous
+    // type string means in practice, and the arity that is genuinely
+    // undetectable — a multi-select column reporting neither an array nor a
+    // definitive type — is exactly what `selectionMode` exists to override.
+    return 'single';
 }
 
 /** Normalise either arity to an array, so the rest of the control has one shape. */

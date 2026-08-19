@@ -34,10 +34,11 @@ configuration pane.
 **Selection mode** defaults to *Automatic* and takes single-or-multiple from the
 bound column itself, so it is normally correct with nothing configured.
 
-It is an override, not a required setting. If a host ever reports the column
-type in a way the control does not recognise — the symptom is a multi-select
-column rendering as single-select, or the reverse — set **Selection mode** to
-*Single* or *Multiple* explicitly. That always wins.
+It is an override, not a required setting. The one case it cannot work out is a
+**multi-select column that is empty** on a host reporting a type-grouped
+property's type as the group rather than the resolved member — that resolves to
+single-select. Set **Selection mode** to *Multiple* there; the explicit setting
+always wins.
 
 ## Option colours
 
