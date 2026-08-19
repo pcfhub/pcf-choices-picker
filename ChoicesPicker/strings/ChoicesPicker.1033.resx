@@ -1,36 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!--
-    Display names and descriptions for everything declared in
-    ControlManifest.Input.xml. PCFHub reads the manifest, so these strings are
-    what appear in the component's API reference on the hub as well as in the
-    maker's properties pane.
-
-    Copy this file to add a language — ChoicesPicker.3082.resx for Spanish, and so
-    on — then list it under <resources> in the manifest.
-  -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="assembly">
-            <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
           <xsd:element name="data">
             <xsd:complexType>
               <xsd:sequence>
@@ -62,30 +36,23 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a2c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a2c561934e089</value>
   </resheader>
-
-  <data name="ChoicesPicker_Name" xml:space="preserve">
-    <value>Choices Picker</value>
-  </data>
-  <data name="ChoicesPicker_Desc" xml:space="preserve">
-    <value>A Choice or Multi-Select Choice column as a keyboard-accessible picker.</value>
-  </data>
-
-  <data name="value_Name" xml:space="preserve">
-    <value>Value</value>
-  </data>
-  <data name="value_Desc" xml:space="preserve">
-    <value>The column this control reads and writes.</value>
-  </data>
-
-  <data name="placeholder_Name" xml:space="preserve">
-    <value>Placeholder</value>
-  </data>
-  <data name="placeholder_Desc" xml:space="preserve">
-    <value>Hint text shown while the field is empty.</value>
-  </data>
+  <data name="ChoicesPicker_Name"><value>Choices Picker</value></data>
+  <data name="ChoicesPicker_Desc"><value>Shows a Choice or Multi-Select Choice column as a keyboard-accessible picker.</value></data>
+  <data name="Value_Name"><value>Choice column</value></data>
+  <data name="Value_Desc"><value>The Choice or Multi-Select Choice column this picker reads and writes.</value></data>
+  <data name="Layout_Name"><value>Layout</value></data>
+  <data name="Layout_Desc"><value>Draw the options as pills or as a stacked list.</value></data>
+  <data name="Layout_Pills_Name"><value>Pills</value></data>
+  <data name="Layout_Checkboxes_Name"><value>Stacked list</value></data>
+  <data name="Options_Name"><value>Options override</value></data>
+  <data name="Options_Desc"><value>Optional. Supplies the options where the host has no column metadata, as "1:New, 2:In progress" or a JSON array. Overrides the column's own options when set.</value></data>
+  <data name="ShowColors_Name"><value>Use option colours</value></data>
+  <data name="ShowColors_Desc"><value>Tint a selected pill with the colour defined on the choice in Dataverse.</value></data>
+  <data name="NoChoices"><value>No options are available for this column.</value></data>
+  <data name="Clear"><value>Clear</value></data>
 </root>

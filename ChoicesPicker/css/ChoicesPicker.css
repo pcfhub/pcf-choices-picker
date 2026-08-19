@@ -1,36 +1,92 @@
 /*
- * Every rule is scoped under the control's own class.
+ * Everything is scoped under .ChoicesPicker so the control cannot leak styles
+ * into the host form.
  *
- * A code component shares a document with the host app and with every other
- * control on the form, so a bare `input { … }` here restyles the page it was
- * dropped onto. The platform does not sandbox this for you.
+ * Colours come from the host's own CSS custom properties where the platform
+ * publishes them, with a literal fallback for hosts that do not — hard-coding
+ * them outright fails in dark mode and in themed environments.
  */
 
 .ChoicesPicker {
-    display: block;
-    width: 100%;
-    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    font-family: var(--fontFamilyBase, "Segoe UI", sans-serif);
+    font-size: var(--fontSizeBase300, 14px);
+    color: var(--colorNeutralForeground1, #242424);
 }
 
-.ChoicesPicker .ChoicesPicker-input {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 6px 8px;
-    /* Inherit rather than declare: the host controls the form's type scale, and
-       a hard-coded family is what makes a control look pasted in. */
-    font: inherit;
-    color: inherit;
-    background: transparent;
-    border: 1px solid rgba(0, 0, 0, 0.25);
-    border-radius: 2px;
+.ChoicesPicker-empty {
+    color: var(--colorNeutralForeground3, #616161);
+    font-style: italic;
 }
 
-.ChoicesPicker .ChoicesPicker-input:focus-visible {
-    outline: 2px solid Highlight;
-    outline-offset: 1px;
+.ChoicesPicker-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    border-radius: 4px;
 }
 
-.ChoicesPicker .ChoicesPicker-input:disabled {
+.ChoicesPicker-option.is-disabled {
+    cursor: default;
     opacity: 0.6;
-    cursor: not-allowed;
+}
+
+/*
+ * The native input stays in the accessibility tree and keeps its keyboard
+ * behaviour; only its painting is replaced. `appearance: none` would remove the
+ * focus ring too, so the ring is reinstated on the wrapper below.
+ */
+.ChoicesPicker-pills .ChoicesPicker-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.ChoicesPicker-pills .ChoicesPicker-option {
+    padding: 4px 12px;
+    border: 1px solid var(--colorNeutralStroke1, #d1d1d1);
+    border-radius: 999px;
+    background: var(--colorNeutralBackground1, #ffffff);
+}
+
+.ChoicesPicker-pills .ChoicesPicker-option.is-selected {
+    border-color: var(--ChoicesPicker-color, var(--colorBrandStroke1, #0f6cbd));
+    background: var(--ChoicesPicker-color, var(--colorBrandBackground2, #ebf3fc));
+    color: var(--colorNeutralForeground1, #242424);
+    font-weight: 600;
+}
+
+/*
+ * :focus-within rather than :focus — the input inside is what actually receives
+ * focus, and it is visually hidden in the pills layout.
+ */
+.ChoicesPicker-pills .ChoicesPicker-option:focus-within {
+    outline: 2px solid var(--colorStrokeFocus2, #000000);
+    outline-offset: 2px;
+}
+
+.ChoicesPicker-checkboxes {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+
+.ChoicesPicker-clear {
+    font: inherit;
+    color: var(--colorBrandForegroundLink, #0f6cbd);
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    text-decoration: underline;
 }
