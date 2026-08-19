@@ -29,6 +29,28 @@ order: 5
 
 ## Notes
 
+### Accepted values
+
+`selectionMode` and `layout` are manifest enums. A model-driven form offers them
+as a dropdown of friendly names; a canvas app takes the underlying string, which
+is what these are:
+
+| Property | Value | Shown in the form designer as |
+| --- | --- | --- |
+| `selectionMode` | `auto` *(default)* | Automatic |
+| | `single` | Single |
+| | `multiple` | Multiple |
+| `layout` | `pills` *(default)* | Pills |
+| | `list` | Stacked list |
+
+Note that the stacked layout's value is `list`, not `stacked list`.
+
+Capitalisation and surrounding spaces are ignored, and an unrecognised value
+falls back to the default rather than erroring — so a typo looks like the
+setting being ignored rather than like a failure.
+
+`showColors` is a Yes/No property; in a canvas app it takes `true` or `false`.
+
 ### One bound property
 
 `value` is the control's only bound property. It uses a manifest **type group**
@@ -37,28 +59,42 @@ column types and the control attaches to exactly one column.
 
 ### `selectionMode` resolution order
 
-`single` and `multiple` are absolute. `auto` resolves in this order, stopping at
-the first that answers:
+**The column is a ceiling, not a default.** `selectionMode` can only ever narrow
+what the column allows, never widen it:
 
-1. `value` holds an array → **multiple**
-2. `value` holds a number → **single**
-3. The bound column reports its type as exactly `MultiSelectOptionSet` → **multiple**
+| Column | `auto` | `single` | `multiple` |
+| --- | --- | --- | --- |
+| Choice (`picklist`, `state`, `status`) | single | single | **single** — the setting is ignored |
+| Multi-Select Choice (`multiselectpicklist`) | multiple | single | multiple |
+| No metadata (canvas, demo) | from the value's shape | single | multiple |
+
+A Choice column stores exactly one value, so a multi-select UI over one would
+let a user pick several and silently keep one on save. The control refuses that
+combination rather than half-implementing it. A Multi-Select Choice column is
+the only one where both answers are real, and there the setting is honoured in
+both directions.
+
+With `auto` and no override, the order is:
+
+1. The column's attribute type is `multiselectpicklist` → **multiple**
+2. It is `picklist`, `state` or `status` → **single**
+3. No attribute metadata, and `value` holds an array → **multiple**
 4. Otherwise → **single**
 
-Steps 1 and 2 are proof: only a multi-select column produces an array, only a
-single-select one a bare number. An empty multi-select column normally still
-reports `[]`, so it is answered by step 1.
+Steps 1 and 2 answer every model-driven form, because the platform supplies the
+column's own attribute type. Steps 3 and 4 are for hosts that supply no column
+metadata — a canvas app, or the demo on this page — where only the value's shape
+is left to go on.
 
-Step 3 compares the reported type **exactly**, never as a substring. For a
-type-grouped property some hosts report the group's accepted types rather than
-the resolved member — a string naming both — and a loose match on it would call
-every column multi-select.
+:::callout{type=info}
+The control deliberately does **not** use the property's `type` field for this.
+On a type-grouped bound property the platform reports `MultiSelectOptionSet`
+there for *every* binding, including single-select columns, so neither a loose
+nor an exact test on it can tell them apart.
+:::
 
-That leaves one case `auto` cannot answer: a multi-select column whose value is
-`null` rather than `[]` on a host that reports the group string. It resolves to
-`single`. Set **Selection mode** to *Multiple* there; the explicit setting always
-wins. Set it explicitly in a canvas app too, where there is no bound column to
-report a type at all.
+In a canvas app there is no attribute metadata at all, so set **Selection mode**
+explicitly rather than relying on `auto`.
 
 ### `options` format
 
@@ -84,10 +120,36 @@ metadata.
 
 ### What is written back
 
-`single` writes a number and `multiple` writes an array of numbers, into the one
-bound column. Arity has to match the column — writing an array to a Choice
-column, or a bare number to a Multi-Select Choice column, hands the platform a
-value it cannot store.
+The shape written back matches the **column**, not the selection mode:
+
+| Column | Written |
+| --- | --- |
+| Choice | a number |
+| Multi-Select Choice | an array of numbers — *including* when limited to single selection |
+
+A Multi-Select Choice column restricted to one choice still stores an array, so
+the control writes `[value]` there while offering a single-select UI. Writing a
+bare number to it would hand the platform a value of the wrong shape for the
+column.
+
+### Records that already hold several values
+
+Limiting a Multi-Select Choice column to a single choice does not change records
+already saved with more. The control shows **every** stored value rather than
+one of them, and enters a reconciling state until one remains:
+
+- Selected options stay interactive and can be removed.
+- Unselected options are disabled, so nothing new can be added.
+- A note explains why, and **Clear selection** empties the column outright.
+- The stacked layout renders checkboxes rather than radios meanwhile, since a
+  radio group cannot show several selected.
+
+Once one value remains, normal single-select behaviour resumes: picking a
+different option replaces it.
+
+Nothing is discarded on the control's initiative. Which of several values to
+drop is the user's decision, and the record keeps all of them until they make
+it — including if they never open the form.
 
 Emptying the selection writes an empty array in `multiple` mode. In `single`
 mode a radio cannot be unset by clicking it again, so the control shows a

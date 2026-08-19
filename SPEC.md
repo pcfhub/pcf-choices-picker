@@ -18,7 +18,159 @@ carrying `aria-pressed`) or as a stacked list (Fluent `Checkbox` /
 `RadioGroup` + `Radio`). Option labels and colours come from the column's own
 metadata, or from an `options` input property where the host has none.
 
-## A loose `type` match made every column multi-select
+## Enum values were documented by their labels, not their values
+
+**Reported:** configuring `Layout` in a canvas app, where the property is a
+string, with no way to find out what strings it accepts.
+
+Two failures, one in the docs and one in the code.
+
+The docs described these properties by the friendly names a model-driven form
+shows in its dropdown — *Pills*, *Stacked list* — and never stated the values
+underneath. A canvas maker types the value, so `Stacked list` looks like the
+answer and `list` is. The hub's own API reference would not have rescued them
+either: `ControlManifestParser::allowedValues()` does capture each `<value>`,
+but its label is the `display-name-key` **verbatim**, so the table renders
+`Layout_Pills_Name` rather than *Pills*. The accepted values are now stated
+outright in `docs/api.md` and `docs/canvas.md`.
+
+The code then made a near-miss worse than it needed to be. `layout.raw` was
+passed straight through, so `"List"` reached the component, failed
+`layout === 'pills'`, rendered the stacked branch, and emitted
+`class="ChoicesPicker-List"` — which matches no CSS, giving an unstyled control
+rather than an ignored setting. `matchEnum()` now trims, lower-cases and matches
+against the declared values, falling back to the default. `selectionMode` gets
+the same treatment, so `"Multiple"` no longer silently means `auto`.
+
+The generated type says `raw` is `"pills" | "list"`, which is true of a
+model-driven form and not of a canvas app, where the value is whatever the maker
+typed. A generated union describes the manifest, not the host.
+
+Also fixed here: `docs/canvas.md` and `docs/examples.md` still told readers to
+read `ChoicesPicker1.choice` / `.choices`, output names that stopped existing
+when the two bound properties became one. It is `ChoicesPicker1.Value`.
+
+## Legacy records: show what is stored, refuse to add, never drop
+
+**Reported:** a Multi-Select Choice column already holding several values, on a
+control later limited to a single choice. It rendered one option, not the three
+the record actually contained.
+
+That was the clamp added with the ceiling rule — `stored.slice(0, 1)` in
+`updateView()`. It was reasoned about as "don't contradict the UI the maker asked
+for", which got the priority backwards: showing one of three values
+misrepresents the record, and any subsequent edit would have written that one
+value back and destroyed the other two. A configuration change is not a reason
+to hide data, and the record is not wrong — the configuration changed under it.
+
+The control now shows everything the column holds and enters a **reconciling
+state** whenever the selection exceeds the mode:
+
+- Selected options stay interactive and can be removed.
+- Unselected options are **disabled**, so nothing can be added — visible rather
+  than discovered by clicking.
+- A `role="status"` note explains why; **Clear selection** still empties outright.
+- The stacked layout falls back from radios to checkboxes meanwhile, because a
+  radio group cannot represent several selected values.
+- Once one value remains, ordinary single-select behaviour resumes.
+
+The decisions live in two pure functions in `resolve.ts` — `isOverLimit()` and
+`nextSelection()` — rather than inside the component, so the rules are testable
+without a renderer. `nextSelection()` returns `null` for a refused interaction,
+which is what keeps "refuse" distinct from "select nothing".
+
+The principle worth carrying: **a control may refuse an edit, but it must not
+silently discard stored data to satisfy its own configuration.** Which of
+several values to drop is the user's decision, and a record nobody opens keeps
+all of them — which matters if the restriction is later reversed.
+
+Fifteen cases through the compiled module cover the reconciling ladder, the
+refusals, the return to normal single-select, and that multiple mode is never
+over-limit.
+
+## The column is a ceiling, and UI arity is not storage arity
+
+**Reported:** a Choice column with `selectionMode: multiple` offered multi-select
+and then stored only one of the chosen options.
+
+`resolveMode()` treated the override as absolute — `if (declared) return
+declared` before looking at anything else. That is wrong in one direction and
+only one: a maker can reasonably ask a Multi-Select Choice column to accept a
+single answer, but asking a Choice column to accept several is asking for
+something the column cannot do. The control now refuses it and stays
+single-select, rather than offering a picker whose extra choices vanish on save.
+
+So the column's capability is a **ceiling**, and `selectionMode` may only narrow
+it:
+
+| Column | `auto` | `single` | `multiple` |
+| --- | --- | --- | --- |
+| `picklist` / `state` / `status` | single | single | **single** — ignored |
+| `multiselectpicklist` | multiple | single | multiple |
+| no metadata | value shape | single | multiple |
+
+Fixing that surfaced a second bug that had not been reported yet, and would
+have been worse: **the shape written back follows the column, not the UI.** A
+Multi-Select Choice column limited to single selection still stores an array,
+and `getOutputs()` was returning `this.selected[0]` whenever the *mode* was
+single — a bare number into a column expecting an array. `writesArray()` now
+answers that question separately from `resolveMode()`, and `getOutputs()` reads
+it instead of the mode. With no metadata to go on, the UI's arity is the only
+available guess and is used as one.
+
+`updateView()` briefly clamped the displayed selection to one in single mode.
+That was wrong and is covered in the next section.
+
+Twelve bindings through the compiled module cover it, including both observed
+payloads, `picklist + override multiple` refusing to widen, and
+`multiselectpicklist + override single` producing a single UI with array
+storage.
+
+## `property.type` cannot tell the two columns apart at all
+
+Two attempts at reading `property.type` were wrong, and the second was wrong for
+a reason the first hid. Runtime payloads captured from a real model-driven form
+settled it:
+
+| | Single-select | Multi-select |
+| --- | --- | --- |
+| Column | `address1_addresstypecode` | `cll_painpoints` |
+| `type` | `"MultiSelectOptionSet"` | `"MultiSelectOptionSet"` |
+| `attributes.Type` | `"picklist"` | `"multiselectpicklist"` |
+| `raw` | `{ _label: 'Bill To', _val: 1, … }` | `null` |
+
+**`type` is `"MultiSelectOptionSet"` for both.** On a type-grouped bound property
+the platform does not report the resolved member there — so no test on it, loose
+or exact, can separate the two. The exact-match fix was still broken; it just
+failed for a different reason than the substring version.
+
+`attributes.Type` is the discriminator, and it is definitive on a model-driven
+form. It is **not in `@types/powerapps-component-framework`**: the declared
+`Metadata` interface has six fields, and the runtime object carries `Behavior`,
+`DefaultValue`, `EntityLogicalName`, `Format`, `Options`, `Precision`,
+`Timestamp` and `Type` besides. Hence the cast and `typeof` guard in
+`attributeType()`, and a fallback path for hosts that supply no metadata.
+
+**`raw` is not always a number.** The single-select column handed over an object
+carrying the value in `_val`, not the documented `number | null`. The previous
+`typeof raw === 'number'` test therefore produced an *empty selection* — the
+control would have rendered with nothing selected even once the mode was right.
+`toSelection()` now unwraps `number`, numeric string, and objects via
+`_val`/`Value`/`value`/`val`/`id`, dropping anything it cannot read rather than
+throwing. `_val` is a minified internal field that a platform update could
+rename, which is why it is one candidate among several.
+
+Verified by compiling `resolve.ts` and running both captured payloads through it
+verbatim, plus ten synthetic bindings covering array-of-objects, `status`
+columns, absent metadata and the override. The single-select case now resolves
+`single` with selection `[1]`; before, `multiple` with `[]`.
+
+The lesson, stated more carefully than last time: **a type-grouped property
+tells you nothing about which member it resolved to.** Get the arity from the
+data source's own metadata, and treat the documented value shape as a hint
+rather than a contract.
+
+## The first symptom: a loose `type` match made every column multi-select
 
 **Reported from a model-driven form:** an `OptionSet` (single) column, with
 Selection mode left on Automatic, rendered as a multi-select.
@@ -30,27 +182,18 @@ reports for a **type-grouped** property, which is the group's accepted types.
 That string names `MultiSelectOptionSet` whichever column is bound, so the test
 matched always.
 
-Fixed by leading with the value's own shape, which is proof rather than
-inference, and comparing `type` **exactly**:
+The first fix led with the value shape and compared `type` **exactly**:
 
 1. `raw` is an array → multiple (an empty multi-select still reports `[]`)
 2. `raw` is a number → single
 3. `type === 'MultiSelectOptionSet'` → multiple
 4. otherwise → single
 
-Exact comparison is right whichever way a host behaves: a definitive member name
-is honoured, and the group string matches neither and falls through to the
-default. The remaining undetectable case — a multi-select column with `null`
-rather than `[]` on a host reporting the group string — resolves to single and
-needs the `selectionMode` override, which is what it is for.
+That was still wrong — see the section above, which supersedes it. `type` names no resolved member at all, so step 3 fired for every binding.
 
-Verified by compiling `resolve.ts` and running ten bindings through it, covering
-both spellings of `type`, both arities, empty and populated, and the override.
-The old expression was confirmed to return `multiple` for the reported binding.
+The harness that checked this only ever fed it invented `type` strings, so it confirmed the new logic against an assumption rather than against the platform. Real captured payloads were what actually settled it.
 
-A lesson worth keeping: a substring test on a platform-supplied type string is a
-guess about a format nobody documented. Compare exactly, and let the value's own
-shape answer first.
+A lesson worth keeping: a test written against an invented fixture proves only that the code matches the invention. Capture the real payload first.
 
 ## Two bound properties asked the maker a second question
 
@@ -73,8 +216,9 @@ configures the control. The maker experience wins.
 What changed with it:
 
 - `selectionMode: auto` no longer picks *between* two properties. It reads the
-  bound value's arity, then the type the type group resolved to — which is the
-  signal that still works on an empty column. It stays as an override.
+  bound column's Dataverse attribute type, falling back to the value's shape
+  where no metadata exists — see the section above for why the property's own
+  `type` cannot be used. It stays as an override.
 - `getOutputs()` returns a number or an array under one `value` key, decided by
   the resolved mode, because `IOutputs.value` is `any` for a type-grouped
   property.

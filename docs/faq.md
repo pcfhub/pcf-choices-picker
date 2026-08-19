@@ -19,11 +19,30 @@ Three causes, in order of likelihood:
    `1:Draft, 2:In review` form.
 3. **The column genuinely has no choices defined** in Dataverse.
 
-## It shows one selection when the column allows several
+## I set Selection mode to Multiple and it still only lets me pick one
 
-**Selection mode** is on *Automatic* and the column is empty, so there was no
-value to infer the arity from. Set **Selection mode** to *Multiple* — an
-explicit setting always wins over the inference.
+The bound column is a **Choice** column, which stores exactly one value. The
+control ignores *Multiple* there on purpose: it would otherwise let you pick
+several and keep one of them on save, losing the rest without telling you.
+
+To allow several, the column itself has to be a **Multi-Select Choice** column.
+That is a change to the column in Dataverse, not to this control.
+
+## Can I limit a Multi-Select Choice column to one answer?
+
+Yes — set **Selection mode** to *Single*. That direction is honoured, because
+the column can hold many and you are choosing to use fewer. It still stores an
+array, so nothing else reading the column has to change.
+
+## An old record shows several options and I cannot add another
+
+That record was saved before the field was limited to one choice, and the
+control is showing you everything it actually holds rather than hiding some of
+it. Remove options until one is left; the other options become available again
+at that point.
+
+The control does not silently drop the extra values — which of them to keep is
+your decision, and records nobody opens keep all of them.
 
 ## The control does not appear for my column
 

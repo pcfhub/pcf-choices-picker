@@ -34,11 +34,34 @@ configuration pane.
 **Selection mode** defaults to *Automatic* and takes single-or-multiple from the
 bound column itself, so it is normally correct with nothing configured.
 
-It is an override, not a required setting. The one case it cannot work out is a
-**multi-select column that is empty** on a host reporting a type-grouped
-property's type as the group rather than the resolved member — that resolves to
-single-select. Set **Selection mode** to *Multiple* there; the explicit setting
-always wins.
+It is an override, not a required setting. On a model-driven form the platform
+supplies the column's own Dataverse attribute type — `picklist` or
+`multiselectpicklist` — which is definitive, so *Automatic* is correct for both
+column types whether or not the column has a value.
+
+:::callout{type=info}
+**On a Choice column the setting does nothing.** That column stores exactly one
+value, so setting *Multiple* would offer a picker that lets a user choose
+several and keeps one of them on save. The control ignores it and stays
+single-select.
+
+Setting *Single* on a **Multi-Select Choice** column does work — that column can
+hold many, so limiting it to one is a real thing to ask for. It still stores an
+array behind the scenes, so nothing else on the form has to change.
+:::
+
+### Existing records with several values
+
+Limiting the control does not rewrite records already saved with more than one
+value. Those open showing **all** of them, with the unselected options disabled
+and a note explaining why: the user removes options until one remains, and then
+the field behaves as a normal single choice.
+
+The control never drops values by itself. A record left alone keeps everything
+it had, which matters if the restriction is later reversed.
+
+The override is mainly for canvas apps, where there is no column metadata at
+all, and as an escape hatch if a future platform change breaks the detection.
 
 ## Option colours
 

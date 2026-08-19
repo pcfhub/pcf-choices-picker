@@ -24,19 +24,31 @@ column in Dataverse. `options` can narrow or relabel what this control *offers*
 on one form, but it stores nothing and constrains nothing — a value already on
 the record that is not in the list simply shows as unselected.
 
-## `Selection mode` on an empty multi-select column
+## A Choice column cannot be made multi-select
 
-`auto` reads the value's shape first, which is proof — an array means
-multi-select, a number means single. An empty multi-select column normally still
-reports an empty array, so that usually answers it too.
+`Selection mode` narrows what the column allows; it cannot widen it. Set it to
+*Multiple* on a Choice column and the control stays single-select, because that
+column stores exactly one value — a multi-select picker over it would let
+someone choose four options and keep one on save.
 
-Where it cannot: a multi-select column whose value is `null` rather than `[]`,
-on a host that reports a type-grouped property's type as the group's accepted
-types rather than the resolved one. The control resolves that to single-select.
-Set **Selection mode** to *Multiple*; the explicit setting always wins.
+The reverse works: a **Multi-Select Choice** column can be limited to one
+choice. It still stores an array, so the column and anything reading it are
+unaffected.
 
-The reverse — a single-select column rendering as multi-select — was a real bug
-in 0.1.0's detection and is fixed. If you see it, the control is stale.
+## `Selection mode` where there is no column metadata
+
+On a model-driven form `auto` reads the column's own Dataverse attribute type,
+which is definitive — `picklist` and `multiselectpicklist` cannot be confused.
+
+A canvas app supplies no attribute metadata, so `auto` has only the value's
+shape to go on: an array means multi-select, anything else falls back to
+single. Set **Selection mode** explicitly there. The same applies to the demo on
+this page, which is why its presets set it.
+
+Single-select columns rendering as multi-select was a real bug during
+development, caused by trusting the property's `type` field — which reports
+`MultiSelectOptionSet` for every binding of a type-grouped property. It is
+fixed. If you still see it, the control is stale.
 
 ## Option colours only apply to pills
 

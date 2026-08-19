@@ -58,14 +58,18 @@ the setting only affects the pill layout.
 
 No Dataverse column involved: the options are supplied outright.
 
+Canvas properties take the underlying strings, not the friendly names the form
+designer shows:
+
 | Property | Value |
 | --- | --- |
-| Options | `1:Low, 2:Medium, 3:High` |
-| Selection mode | `single` |
-| Layout | Pills |
+| `Options` | `"1:Low, 2:Medium, 3:High"` |
+| `SelectionMode` | `"single"` |
+| `Layout` | `"pills"` |
+| `ShowColors` | `true` |
 
-Read the answer from `ChoicesPicker1.choice`. Set **Selection mode** explicitly —
-`auto` has no bound column to inspect in a canvas app.
+Read the answer from `ChoicesPicker1.Value`. Set `SelectionMode` explicitly —
+`"auto"` decides from column metadata, and a canvas app supplies none.
 
 ## Narrowing a column's options on one form
 
