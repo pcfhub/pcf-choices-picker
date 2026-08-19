@@ -1,6 +1,29 @@
 import { IInputs } from '../generated/ManifestTypes';
 
 export type SelectionMode = 'single' | 'multiple';
+export type Layout = 'pills' | 'list';
+
+/**
+ * Match an enum property's value against what the manifest declares.
+ *
+ * A model-driven form supplies one of the declared values, but a canvas app
+ * hands these over as free strings the maker typed, so `"List"` and `" list "`
+ * both reach the control. Matching case-insensitively after trimming, and
+ * falling back to the default rather than passing an unknown value through,
+ * keeps a typo from rendering an unstyled control — the class name would carry
+ * the typo and match no CSS.
+ */
+function matchEnum<T extends string>(raw: unknown, allowed: readonly T[], fallback: T): T {
+    const value = typeof raw === 'string' ? raw.trim().toLowerCase() : '';
+
+    return allowed.find((candidate) => candidate === value) ?? fallback;
+}
+
+/** The layout to draw, defaulting to pills for anything unrecognised. */
+export function resolveLayout(context: ComponentFramework.Context<IInputs>): Layout {
+    return matchEnum(context.parameters.layout.raw, ['pills', 'list'] as const, 'pills');
+}
+
 type OptionMetadata = ComponentFramework.PropertyHelper.OptionMetadata;
 type OptionSetMetadata = ComponentFramework.PropertyHelper.FieldPropertyMetadata.OptionSetMetadata;
 
@@ -98,7 +121,13 @@ export function resolveMode(context: ComponentFramework.Context<IInputs>): Selec
         return 'single';
     }
 
-    const declared = context.parameters.selectionMode.raw;
+    // Matched the same forgiving way as `layout`: a canvas app supplies whatever
+    // the maker typed, and "Multiple" should not silently mean "auto".
+    const declared = matchEnum(
+        context.parameters.selectionMode.raw,
+        ['auto', 'single', 'multiple'] as const,
+        'auto',
+    );
 
     if (declared === 'single' || declared === 'multiple') {
         return declared;

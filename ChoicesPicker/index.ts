@@ -3,6 +3,7 @@ import { IInputs, IOutputs } from './generated/ManifestTypes';
 import { ChoicesPickerControl, IProps } from './components/ChoicesPickerControl';
 import {
     boundValue,
+    resolveLayout,
     resolveMode,
     resolveOptions,
     toSelection,
@@ -63,7 +64,7 @@ export class ChoicesPicker implements ComponentFramework.ReactControl<IInputs, I
             options: resolveOptions(context),
             selected: this.selected,
             mode: this.mode,
-            layout: context.parameters.layout.raw ?? 'pills',
+            layout: resolveLayout(context),
             showColors: context.parameters.showColors.raw ?? true,
             disabled,
             masked: property.security?.readable === false,
