@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+
+  "slug": "pcf-choices-picker",
+  "name": "Choices Picker",
+  "tagline": "A Choice or Multi-Select Choice column as a keyboard-accessible picker.",
+  "category": "pickers",
+  "tags": [],
+
+  "control": {
+    "namespace": "PCFHub",
+    "constructor": "ChoicesPicker",
+    "type": "field",
+    "framework": "standard",
+    "manifestPath": "ChoicesPicker/ControlManifest.Input.xml"
+  },
+
+  "links": {
+    "homepage": "https://github.com/pcfhub/pcf-choices-picker",
+    "support": "https://github.com/pcfhub/pcf-choices-picker/issues",
+    "license": "MIT"
+  },
+
+  "docs": {
+    "path": "docs"
+  },
+
+  "media": {
+    "logo": "media/logo.png",
+    "screenshots": []
+  },
+
+  "demo": {
+    "fidelity": "none"
+  }
+}
