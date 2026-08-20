@@ -3,10 +3,56 @@
 A Choice or Multi-Select Choice column as a keyboard-accessible picker.
 
 [![Build](https://github.com/pcfhub/pcf-choices-picker/actions/workflows/build.yml/badge.svg)](https://github.com/pcfhub/pcf-choices-picker/actions/workflows/build.yml)
+[![Release](https://github.com/pcfhub/pcf-choices-picker/actions/workflows/release.yml/badge.svg)](https://github.com/pcfhub/pcf-choices-picker/actions/workflows/release.yml)
 
 Documentation lives on [PCFHub](https://pcfhub.dev/components/pcf-choices-picker), built
 from the `docs/` directory in this repository. Edit the Markdown here; the hub
 recompiles it.
+
+## What it does
+
+Renders a Choice or Multi-Select Choice column as Fluent pills or a stacked list,
+optionally in the option's own colour, fully operable from the keyboard.
+
+It binds through **one** property that accepts either column type. That matters in
+the maker experience: a field control binds its first bound property to the column
+it is placed on, and any further bound property shows up as a second column picker
+in the configuration pane. Two properties would mean asking a maker to choose a
+second column for a control that attaches to exactly one. A type-group is the only
+shape that accepts both types through a single binding.
+
+## Properties
+
+| Property | Type | Usage | Default | What it controls |
+| --- | --- | --- | --- | --- |
+| `value` | OptionSet or MultiSelectOptionSet | bound, **required** | — | The choice column to render and write back |
+| `options` | Multiple | input | — | Override option list; when empty the platform's own column metadata is used |
+| `selectionMode` | Enum: `auto` · `single` · `multiple` | input | `auto` | Override for hosts where the resolved column type is unreliable |
+| `layout` | Enum: `pills` · `list` | input | `pills` | Pills, or Fluent checkboxes stacked vertically |
+| `showColors` | TwoOptions | input | `true` | Whether to paint each option in its configured colour |
+
+`options` takes `ComponentFramework.PropertyHelper.OptionMetadata` verbatim:
+
+```json
+[{ "Value": 1, "Label": "Draft", "Color": "#616161" }]
+```
+
+Supplying it lets a maker relabel or narrow the choices without touching the column.
+In a model-driven app it is usually unnecessary — the platform provides the list —
+but a host with no column metadata has no other source.
+
+Strings ship in English, Spanish, French, German and Japanese. Built on the
+platform's own React 16.14 and Fluent 9 libraries, so neither is bundled into the
+control.
+
+## On the hub
+
+The demo runs at **full** fidelity, which is a consequence of the manifest declaring
+no `feature-usage` at all: this control renders and writes back a bound column and
+does nothing else — no Web API, no device, no navigation. That absence is what lets
+the sandbox run the real thing, and it is one fewer permission prompt for the maker
+installing it. Four presets cover single, multi-select, the stacked list, and the
+empty state.
 
 ## Install
 
