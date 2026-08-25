@@ -1,6 +1,6 @@
 {
   "name": "pcf-choices-picker",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A Choice or Multi-Select Choice column as a keyboard-accessible picker.",
   "license": "MIT",
   "private": true,
