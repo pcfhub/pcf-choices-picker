@@ -100,7 +100,22 @@ export class ChoicesPicker implements ComponentFramework.ReactControl<IInputs, I
             return { value: this.selected };
         }
 
-        return { value: this.selected.length > 0 ? this.selected[0] : undefined };
+        /*
+         * `null`, not `undefined`, and the difference is the Clear button
+         * working.
+         *
+         * `IOutputs.value` is `any` here, so `undefined` type-checks perfectly
+         * and means the opposite of what an empty selection needs: the platform
+         * reads an absent output as *no change*, keeps whatever the column had,
+         * and the Clear affordance below silently does nothing. A canvas app
+         * honours that strictly; a model-driven form is more forgiving, so the
+         * bug hides on the host most people test first.
+         *
+         * `pcf-star-rating` shipped exactly this and its clear button did
+         * nothing. The multi-select arm above never had the problem, because an
+         * empty array is a value.
+         */
+        return { value: this.selected.length > 0 ? this.selected[0] : null };
     }
 
     public destroy(): void {
