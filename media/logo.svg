@@ -1,0 +1,45 @@
+<svg width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Options, one of them picked.
+
+       The control renders a Choice or Multi-Select Choice column as a picker,
+       so the mark has to hold both: a chosen option and an unchosen one, in the
+       same list. One check and one empty box says that. Two checks says
+       multi-select only, and says it by drawing a list in which everything is
+       selected, which is not a picker so much as a receipt.
+
+       The ramp is the PCFHub mark's own, verbatim, so this sits in the family rather
+       than beside it. Declared in userSpaceOnUse and spanning the whole 96
+       canvas, so the mark reads as one object lit from the top right.
+
+       Drawn for 32px, and the empty box is a stroked outline rather than a
+       tinted square for the same reason the grid marks in this account use
+       shape rather than tint: an outline has a HOLE in it, and a hole survives
+       at 24 where a 0.5 fill has gone soft and reads as a smudge.
+
+       Two discarded attempts. Drawn as an open combobox, a field pill above and
+       a menu below, the mark is two stacked cards at 32 and the chevron that
+       made it a combobox is the first thing to disappear. Drawn as a closed
+       combobox, one pill with a label and a chevron, it is legible and it is
+       also the SAME SILHOUETTE as pcf-row-commands, which is a pill with a
+       label and three dots; two marks a maker has to tell apart by their right
+       hand end is a worse outcome than either mark being slightly duller.
+
+       Note: no double hyphen may appear in this comment, or the whole document
+       fails to parse as XML. -->
+  <defs>
+    <linearGradient id="choices-picker-ramp" x1="6" y1="82" x2="90" y2="14" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A684FF"/><stop offset="0.6" stop-color="#7C86FF"/><stop offset="1" stop-color="#00BCFF"/>
+    </linearGradient>
+  </defs>
+  <!-- The picker. -->
+  <rect x="6" y="14" width="84" height="68" rx="16" fill="url(#choices-picker-ramp)"/>
+
+  <!-- The option that was picked. -->
+  <path d="M19 34 L26 41 L39 27" stroke="#F8FAFC" stroke-width="9"
+        stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <rect x="48" y="29" width="30" height="10" rx="5" fill="#F8FAFC"/>
+
+  <!-- The one that was not. Outlined, so it keeps a hole at 24. -->
+  <rect x="19" y="53" width="19" height="19" rx="6" stroke="#F8FAFC" stroke-width="6" fill="none"/>
+  <rect x="48" y="57" width="24" height="10" rx="5" fill="#F8FAFC" fill-opacity="0.55"/>
+</svg>
