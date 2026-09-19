@@ -4,6 +4,7 @@
   "name": "Choices Picker",
   "tagline": "A Choice or Multi-Select Choice column as a keyboard-accessible picker.",
   "category": "pickers",
+  "hosts": ["canvas", "model-driven"],
   "tags": [
     "react",
     "fluent",
