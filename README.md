@@ -5,6 +5,8 @@ A Choice or Multi-Select Choice column as a keyboard-accessible picker.
 [![Build](https://github.com/pcfhub/pcf-choices-picker/actions/workflows/build.yml/badge.svg)](https://github.com/pcfhub/pcf-choices-picker/actions/workflows/build.yml)
 [![Release](https://github.com/pcfhub/pcf-choices-picker/actions/workflows/release.yml/badge.svg)](https://github.com/pcfhub/pcf-choices-picker/actions/workflows/release.yml)
 
+[![Try it live on PCFHub](https://pcfhub.dev/badges/try-it-live.svg)](https://pcfhub.dev/components/pcf-choices-picker)
+
 Documentation lives on [PCFHub](https://pcfhub.dev/components/pcf-choices-picker), built
 from the `docs/` directory in this repository. Edit the Markdown here; the hub
 recompiles it.
