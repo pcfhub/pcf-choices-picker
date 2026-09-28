@@ -320,21 +320,44 @@ misleading, but it is the platform's name and the bundle must match it.
 time: a manifest declaring Fluent built cleanly with `@fluentui/react-components`
 not installed at all. A wrong version here fails in the host, not in CI.
 
-## The demo harness never supplies `attributes.Options`
+## The demo harness supplies `attributes.Options` since 2026-09-28
 
-`resources/js/demo-harness/context/Parameters.ts`'s `baseAttributes()` returns
-`DisplayName`, `LogicalName`, `Description`, `IsSecured`, `SourceType` and
-`RequiredLevel` — and no `Options`. A control reading option metadata alone
-would render an empty picker in its own published demo.
+Until then the harness's `baseAttributes()` returned `DisplayName`,
+`LogicalName`, `Description`, `IsSecured`, `SourceType` and `RequiredLevel`, and
+no `Options`. A control reading option metadata alone would have rendered an
+empty picker in its own demo, so every preset supplied its list through
+`options`. That is the canvas route, and it is why `options` exists at all.
 
-This is why `options` exists as an input property, and why it is not a demo-only
-hack: a canvas app has no column metadata either, so the demo exercises exactly
-the code path a canvas maker uses in production. `demo.fidelity: "full"` is
-honest on that basis — nothing is stubbed, and no user-visible path leaves the
-browser.
+pcfhub/pcfhub#52 let a fixture describe its columns, and a field control's
+fixture carries only a `dataverse` section. `demo/records.json` describes
+`cr123_status` on the form record's table, with four options and a colour
+each, and binds `value` to it through `boundColumns`. The harness hands those
+options over as `value.attributes.Options`, in the `OptionMetadata` shape.
 
-`demo.datasetFixture` is not an option here: it seeds datasets only, and this is
-a field control.
+So the demo now shows both routes:
+
+- *Single choice* and *Nothing selected* leave `options` empty and read the
+  column, as on a model-driven form;
+- the two skills presets keep `options`, the canvas route and the way to
+  relabel or narrow a list.
+
+A demo has one fixture, so one bound column. That is why the skills list is not
+described too.
+
+It was checked with 0.1.1's published bundle against that harness, before the
+push:
+
+- *Single choice* drew Draft, In review, Approved and Rejected in the options'
+  colours, with In review selected;
+- picking Approved output `value: 3`;
+- *Multi-select* still drew its own six choices from `options`.
+
+`demo.fidelity: "full"` stays honest on both routes. Nothing is stubbed, and no
+user-visible path leaves the browser.
+
+Not modelled: a type-grouped property reports the harness's declared group
+(`OptionSet | MultiSelectOptionSet`) as its `type`, not the type the column
+resolved to. That is why every preset sets `selectionMode`.
 
 ## `notifyOutputChanged()` does not re-render in the demo
 

@@ -1,0 +1,30 @@
+{
+    "dataverse": {
+        "record": {
+            "entityType": "cr123_project",
+            "id": "6a1f0c3e-2b4d-4e5f-8a9b-0c1d2e3f4a51",
+            "name": "Website relaunch"
+        },
+        "tables": {
+            "cr123_project": {
+                "entitySet": "cr123_projects",
+                "primaryId": "cr123_projectid",
+                "primaryName": "cr123_name",
+                "columns": {
+                    "cr123_status": {
+                        "type": "OptionSet",
+                        "options": [
+                            { "value": 1, "label": "Draft", "color": "#616161" },
+                            { "value": 2, "label": "In review", "color": "#0F6CBD" },
+                            { "value": 3, "label": "Approved", "color": "#107C10" },
+                            { "value": 4, "label": "Rejected", "color": "#C4314B" }
+                        ]
+                    }
+                }
+            }
+        },
+        "boundColumns": {
+            "value": "cr123_status"
+        }
+    }
+}

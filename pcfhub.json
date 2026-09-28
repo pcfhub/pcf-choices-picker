@@ -37,15 +37,16 @@
     "styles": [
       "out/controls/ChoicesPicker/css/ChoicesPicker.css"
     ],
+    "datasetFixture": "demo/records.json",
     "presets": [
       {
         "slug": "status-single",
         "name": "Single choice",
-        "description": "A Choice column shown as pills, with one option selected.",
+        "description": "A Choice column shown as pills, one option selected, its options and colours read from the column itself, as on a model-driven form: Options is left empty.",
         "isDefault": true,
         "props": {
           "value": 2,
-          "options": "[{\"Value\":1,\"Label\":\"Draft\",\"Color\":\"#616161\"},{\"Value\":2,\"Label\":\"In review\",\"Color\":\"#0F6CBD\"},{\"Value\":3,\"Label\":\"Approved\",\"Color\":\"#107C10\"},{\"Value\":4,\"Label\":\"Rejected\",\"Color\":\"#C4314B\"}]",
+          "options": "",
           "selectionMode": "single",
           "layout": "pills",
           "showColors": true
@@ -54,7 +55,7 @@
       {
         "slug": "skills-multi",
         "name": "Multi-select",
-        "description": "A Multi-Select Choice column, three of six selected.",
+        "description": "A Multi-Select Choice column, three of six selected, its choices given in the Options property — the route a canvas app needs, and the way to relabel or narrow a column's list.",
         "props": {
           "value": [
             1,
@@ -85,10 +86,10 @@
       {
         "slug": "empty",
         "name": "Nothing selected",
-        "description": "The empty state, with option colours switched off.",
+        "description": "The empty state, with option colours switched off, over the same Choice column as Single choice.",
         "props": {
           "value": null,
-          "options": "[{\"Value\":1,\"Label\":\"Draft\",\"Color\":\"#616161\"},{\"Value\":2,\"Label\":\"In review\",\"Color\":\"#0F6CBD\"},{\"Value\":3,\"Label\":\"Approved\",\"Color\":\"#107C10\"},{\"Value\":4,\"Label\":\"Rejected\",\"Color\":\"#C4314B\"}]",
+          "options": "",
           "selectionMode": "single",
           "layout": "pills",
           "showColors": false

@@ -13,9 +13,10 @@ discover the choices. The `options` property is required there — without it th
 picker renders its empty state. This is a property of the host, not of this
 control; see [Canvas apps](canvas.md).
 
-The same is true of the demo on this page: the option lists in its presets are
-supplied through `options`, because the demo harness has no Dataverse behind it
-either. That is the same code path a canvas app uses in production.
+The demo on this page shows both routes. *Single choice* and *Nothing selected*
+read their options and colours from the column, through a stand-in Dataverse
+behind the demo, as a model-driven form does. The two skills presets supply
+theirs through `options`, the same code path a canvas app uses in production.
 
 ## It does not manage the choices themselves
 
