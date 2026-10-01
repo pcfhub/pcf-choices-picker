@@ -3,6 +3,7 @@
   "slug": "pcf-choices-picker",
   "name": "Choices Picker",
   "tagline": "A Choice or Multi-Select Choice column as a keyboard-accessible picker.",
+  "summary": "Shows every option of a Choice or Multi-Select Choice column at once, as pills or a stacked list with the selected ones marked, instead of a dropdown that hides the selection behind a summary line. One control handles both column types, and it uses the option colours already set in Dataverse.\n\nEvery option is reachable from the keyboard. In a canvas app there is no column metadata, so the option list is supplied through the `options` property.",
   "category": "pickers",
   "hosts": ["canvas", "model-driven"],
   "tags": [
