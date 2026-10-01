@@ -67,6 +67,9 @@
           "selectionMode": "multiple",
           "layout": "pills",
           "showColors": true
+        },
+        "state": {
+          "host": "canvas"
         }
       },
       {
