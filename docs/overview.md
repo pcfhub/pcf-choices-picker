@@ -8,6 +8,10 @@ order: 1
 
 A Choice or Multi-Select Choice column as a keyboard-accessible picker.
 
+:::callout{type=warning}
+**Reference example · built with AI.** This control was written with AI (Claude) and tested on a live Dataverse form; its code has not been reviewed line by line. It is published as a worked example and is not maintained — read the source and [SPEC.md](https://github.com/pcfhub/pcf-choices-picker/blob/main/SPEC.md) (what was measured on the form) before you use it. Fixes are not guaranteed.
+:::
+
 ::image{src=media/logo.png alt="Choices Picker" zoom}
 
 ## Why this one
