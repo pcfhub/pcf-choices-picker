@@ -27,13 +27,20 @@
  *
  * **A stub must never be more capable than the thing it stands in for.**
  *
- * `attributes` is `undefined` on canvas. `Options` is absent from the demo
- * harness's metadata even where `attributes` exists — its `baseAttributes()`
- * returns DisplayName, LogicalName, Description, IsSecured, SourceType and
- * RequiredLevel and nothing else — so `metadata: 'no-options'` reproduces that
- * exactly rather than approximating it. `security` is absent on a column with
- * no FLS profile, which is the common case and the one unguarded code breaks
- * on.
+ * `Options` is absent from the demo harness's metadata even where
+ * `attributes` exists — its `baseAttributes()` returns DisplayName,
+ * LogicalName, Description, IsSecured, SourceType and RequiredLevel and
+ * nothing else — so `metadata: 'no-options'` reproduces that exactly rather
+ * than approximating it. `security` is absent on a column with no FLS
+ * profile, which is the common case and the one unguarded code breaks on.
+ *
+ * **And it must never be less misleading either.** This said `attributes` is
+ * `undefined` on canvas until 0.1.2. A canvas app hands over a full one that
+ * describes the property and no column (read with a probe control in the
+ * published player, 2026-10-06): its `DisplayName` is the property's own
+ * name, and its `EntityLogicalName` is empty where a form names the table.
+ * A control that passed here against `undefined` announced every pill as
+ * "value: Draft" in a canvas app. See `canvasAttributes`.
  */
 
 (function (root, factory) {
@@ -70,13 +77,56 @@
     /**
      * The two hosts, and the difference that matters.
      *
-     * A model-driven form hands down column metadata; a canvas app does not.
-     * Anything the control reads with `?.` is reading across this line.
+     * A model-driven form hands down the column's metadata. A canvas app hands
+     * down an `attributes` too, about the property and no column — so its
+     * being there tells a control nothing, and `EntityLogicalName` does.
      */
     var HOSTS = {
         'model-driven': { label: 'model-driven form', publishesMetadata: true },
-        canvas: { label: 'canvas app', publishesMetadata: false },
+        canvas: { label: 'canvas app', publishesMetadata: false, describesNoColumn: true },
     };
+
+    /**
+     * What every bound property reported for `security` in a canvas app
+     * (2026-10-06): never `undefined`, always open.
+     */
+    var CANVAS_SECURITY = { editable: true, readable: true, secured: false };
+
+    /**
+     * What a canvas app hands the bound property as `attributes`: a
+     * description of the manifest property, about no column.
+     *
+     * The members and values are the probe's reading of an `OptionSet`
+     * property in the published player (2026-10-06, the catalogue workspace's
+     * `.probe-kit/attributes-probe`), the same on six instances fed from a
+     * literal, a variable, a collection and two Dataverse tables. This
+     * control's property is a type group of `OptionSet` and
+     * `MultiSelectOptionSet`, which the probe did not read: the group is
+     * assumed to answer as its first member does.
+     *
+     * `Options` are the rows of the maker's `value_Options` table, numbered
+     * from 0 — the empty list for one nobody filled.
+     */
+    function canvasAttributes(rows) {
+        return {
+            EntityLogicalName: '',
+            LogicalName: 'value',
+            DisplayName: 'value',
+            RequiredLevel: 0,
+            IsSecured: false,
+            SourceType: null,
+            DefaultValue: '',
+            ImeMode: 0,
+            MaxLength: 100,
+            MinValue: -100000000000,
+            MaxValue: 100000000000,
+            Precision: 2,
+            Behavior: 0,
+            Type: 'string',
+            Format: '1',
+            Options: rows,
+        };
+    }
 
     /**
      * How the column's field-level security is configured.
@@ -135,9 +185,16 @@
         /**
          * Column metadata: `full` carries Options, `no-options` carries the
          * attributes the hub's demo harness actually supplies and no Options at
-         * all. Ignored on canvas, which publishes no attributes whatever.
+         * all. Ignored on canvas, which describes the property instead — see
+         * `canvasOptions`.
          */
         metadata: 'full',
+        /**
+         * On canvas only: the rows of the maker's `value_Options` table, as
+         * `attributes.Options` carries them there — `{ Label, Value }`,
+         * numbered from 0. Empty is a table nobody filled, the common case.
+         */
+        canvasOptions: [],
         /** The `options` input property, as the raw string a maker typed. */
         options: null,
         selectionMode: 'auto',
@@ -159,7 +216,8 @@
     function createContext(options) {
         var o = Object.assign({}, DEFAULTS, options || {});
         var host = HOSTS[o.host] || HOSTS['model-driven'];
-        var security = SECURITY[o.security];
+        // A canvas app reports every property open; a profile set on purpose still wins.
+        var security = host.describesNoColumn && o.security === 'none' ? Object.assign({}, CANVAS_SECURITY) : SECURITY[o.security];
 
         var getString =
             o.getString
@@ -176,12 +234,19 @@
                 Type: ATTRIBUTE_TYPES[o.column],
             };
 
-            // The demo harness's metadata stops here. A control that reads
-            // `attributes.Options` alone renders an empty picker in its own
-            // demo, which is what this switch exists to catch.
+            // The demo harness's metadata stops here, with no table named. A
+            // control that reads `attributes.Options` alone renders an empty
+            // picker in its own demo, which is what this switch exists to
+            // catch.
             if (o.metadata === 'full') {
+                // The table: on a form, how a control knows a column stands
+                // behind the value at all (read on four column types,
+                // 2026-10-06). A canvas app leaves it empty.
+                attributes.EntityLogicalName = 'account';
                 attributes.Options = OPTIONS;
             }
+        } else if (host.describesNoColumn) {
+            attributes = canvasAttributes(o.canvasOptions);
         }
 
         return {

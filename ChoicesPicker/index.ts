@@ -3,6 +3,7 @@ import { IInputs, IOutputs } from './generated/ManifestTypes';
 import { ChoicesPickerControl, IProps } from './components/ChoicesPickerControl';
 import {
     boundValue,
+    columnLabel,
     resolveLayout,
     resolveMode,
     resolveOptions,
@@ -68,7 +69,9 @@ export class ChoicesPicker implements ComponentFramework.ReactControl<IInputs, I
             showColors: context.parameters.showColors.raw ?? true,
             disabled,
             masked: property.security?.readable === false,
-            label: property.attributes?.DisplayName ?? '',
+            // The column's name, and no name where there is no column: a
+            // canvas app's `DisplayName` is "value". See `columnLabel`.
+            label: columnLabel(property),
             theme: resolveTheme(context),
             getString: (id: string): string => context.resources.getString(id),
             onChange: this.onChange,

@@ -37,6 +37,31 @@ export function boundValue(context: ComponentFramework.Context<IInputs>): Compon
 }
 
 /**
+ * The name to announce the picker under: the bound column's display name,
+ * where a column stands behind the value — and nothing where none does.
+ *
+ * A model-driven form describes the column in `attributes`. **A canvas app
+ * hands over an `attributes` too, and it describes the property**: its
+ * `DisplayName` is the property's own name, "value", beside an empty
+ * `EntityLogicalName` (read with a probe control in a published canvas app,
+ * 2026-10-06). Through 0.1.1 that name was taken for a column's, so in a
+ * canvas app every pill was announced as "value: Draft" and the stacked list
+ * as a group called "value". `attributes` being there says nothing; a table's
+ * name in it does.
+ *
+ * `EntityLogicalName` is not in the typings, hence the cast. Only the name is
+ * held to this: `Options` in a canvas app are the maker's own rows, and
+ * `Type` there matches no Dataverse attribute type, so neither can be
+ * mistaken for a column's.
+ */
+export function columnLabel(property: ComponentFramework.PropertyTypes.Property): string {
+    const attributes = property.attributes as { EntityLogicalName?: unknown; DisplayName?: unknown } | undefined;
+    const onColumn = typeof attributes?.EntityLogicalName === 'string' && attributes.EntityLogicalName !== '';
+
+    return onColumn && typeof attributes.DisplayName === 'string' ? attributes.DisplayName : '';
+}
+
+/**
  * Single or multiple, resolved from the column the maker actually bound.
  *
  * `selectionMode` wins when set, because it is the only answer that cannot be

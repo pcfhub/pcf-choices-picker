@@ -13,6 +13,7 @@
                 "columns": {
                     "cr123_status": {
                         "type": "OptionSet",
+                        "displayName": "Status",
                         "options": [
                             { "value": 1, "label": "Draft", "color": "#616161" },
                             { "value": 2, "label": "In review", "color": "#0F6CBD" },

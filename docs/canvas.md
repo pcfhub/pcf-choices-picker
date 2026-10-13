@@ -99,3 +99,27 @@ metadata, and a canvas app supplies none.
 Canvas gives the control whatever width and height you set on it. The pills wrap
 onto as many rows as they need, so give it enough height for the longest
 selection, or use the stacked list layout where the height is predictable.
+
+## A name for screen readers
+
+On a model-driven form the picker is announced under the column's display
+name. A canvas app has no column, so each option is announced by its own label
+and the picker itself has no name: put a **Label** beside it that says what is
+being chosen.
+
+A canvas app does hand the control a name: the property's own, "value".
+Through 0.1.1 the control took that for a column's and announced every option
+as "value: Draft". 0.1.2 announces a name only where a column stands behind
+the value. This was seen in the demo on PCFHub, whose canvas mode hands over
+what a canvas app was read to; it has not been listened to in a canvas app.
+
+**Importing the solution does not update a canvas app.** A published app
+serves its own copy of the control, so after importing 0.1.2:
+
+:::steps
+1. Open the app in Studio **after** the import. Reload a session that was
+   already open.
+2. Accept **Update code components** when Studio offers it.
+3. Save, then publish, and wait for "Publish successful". If Save is greyed
+   out the app has not changed: edit any formula first.
+:::

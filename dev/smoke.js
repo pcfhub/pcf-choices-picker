@@ -179,6 +179,42 @@ check('and the current selection', JSON.stringify(plain.props().selected) === '[
 check('the label comes from the column, not the .resx', plain.props().label === 'Status', plain.props().label);
 
 /*
+ * **A canvas app names the property, not a column.** Its `attributes` is
+ * there, complete, and about nothing: `DisplayName` is the property's own name
+ * — "value" — beside an empty `EntityLogicalName` (read 2026-10-06). Through
+ * 0.1.1 that name was taken for a column's, so every pill was announced as
+ * "value: Draft" and the list as a group called "value". Seen in the hub's
+ * demo on 2026-10-12, the day its canvas host started handing over what a
+ * canvas app does; this rig said `attributes` was `undefined` there, so the
+ * suite could not have caught it.
+ */
+const onCanvas = mount({ host: 'canvas', options: '1:Low, 2:High' });
+
+check("a canvas app's name for the property is not announced as a column's", onCanvas.props().label === '', JSON.stringify(onCanvas.props().label));
+
+check(
+    'and the options input still supplies the list there',
+    onCanvas.props().options.map((o) => o.Label).join(',') === 'Low,High',
+    JSON.stringify(onCanvas.props().options.map((o) => o.Label)),
+);
+
+check(
+    'a canvas app with nothing supplied has no options, and says so rather than breaking',
+    mount({ host: 'canvas' }).props().options.length === 0,
+    JSON.stringify(mount({ host: 'canvas' }).props().options),
+);
+
+/*
+ * The hub's demo names no table unless its fixture puts the property on a
+ * column, and then a name with no table behind it is not a column's either.
+ */
+check(
+    'a name with no table behind it is not announced on a form host either',
+    mount({ metadata: 'no-options', options: '1:Low, 2:High' }).props().label === '',
+    JSON.stringify(mount({ metadata: 'no-options', options: '1:Low, 2:High' }).props().label),
+);
+
+/*
  * A single-select column bound through the type group hands over an object
  * rather than a number — observed on a real form as
  * `{ _label: 'Bill To', _val: 1, _state: -1 }`. Reading only

@@ -413,7 +413,61 @@ Single-select needs an explicit **Clear selection** affordance, because neither 
 radio nor a pill standing in for one can be unset by clicking it again — without
 it an optional Choice column could never be emptied.
 
+## A canvas app's name for the property was announced as a column's (0.1.2)
+
+The picker is announced under the bound column's display name: each pill as
+"Status: Draft", the stacked list as a group called "Status". The name came
+from `attributes.DisplayName`, read wherever `attributes` was there.
+
+**It is there in a canvas app too, and it is not a column's.** A probe control
+read a published canvas app on 2026-10-06 (the catalogue workspace's
+`.probe-kit/attributes-probe`): every bound property carries a full
+`attributes` describing the manifest property — `DisplayName` and
+`LogicalName` the property's own name, `EntityLogicalName` empty. Handed that,
+0.1.1 announces every pill as "value: Draft" and the list as a group called
+"value". That is the code read against the probe, and the hub's demo watched
+doing it — not this control heard in a canvas app, where the type group is
+itself unconfirmed (`docs/limitations.md`).
+
+Nothing here could have caught it. `dev/host.js` said `attributes` is
+`undefined` on canvas, and so did the hub's demo until 2026-10-12, when its
+canvas host started handing over what a canvas app does
+(pcfhub/pcfhub#79) and the *Multi-select* preset's pills changed their
+labels in a before-and-after run of every published demo.
+
+0.1.2 takes the name only where `EntityLogicalName` names a table
+(`columnLabel` in `components/resolve.ts`), and announces nothing otherwise.
+`dev/host.js` now models both hosts as read, and the suite has the case.
+
+**Only the name is held to that.** `Options` in a canvas app are the rows of
+the maker's own `value_Options` table, and `Type` there is `string`, which
+matches no Dataverse attribute type — neither can be mistaken for a column's.
+
+**The hub's demo had to be told the column's name.** Its form host reported
+the property's own name as `DisplayName` too, so the demo's pills were
+announced as "value: Draft" there. pcfhub/pcfhub#79 made the harness name the
+table of a column the fixture describes, and pcfhub/pcfhub#80 lets the fixture
+give that column a `displayName`; `demo/records.json` now gives `cr123_status`
+one, and with both the form-host presets are announced as "Status: Draft", as
+on a form. Between the two hub releases the demo names the table and still
+reports the property's name, so its form host says "value: Draft" — what
+0.1.1 said there all along.
+
 ## Verified, and not
+
+**0.1.2, verified by running:** `npm run lint`, `npm run build`,
+`npm run smoke` (34, the two label cases failing against the 0.1.1 bundle
+first), `npm run check`, and `npm run demo-check` over the four presets in the
+hub's harness on the pcfhub#79 branch, where the canvas preset's pills are
+announced by their own labels again.
+
+**0.1.2, not verified:** the fix in a real canvas app, or with a screen
+reader — it rests on the probe's reading of `DisplayName`, not on this control
+watched there. The probe read an `OptionSet` property; this control's property
+is a type group of `OptionSet` and `MultiSelectOptionSet`, assumed to answer
+as its first member. Whether a canvas app offers a `value_Options` table for
+that group, and what the picker shows when a maker fills it, is not read
+either — `docs/canvas.md` still tells makers to use `Options`.
 
 **Verified by running:** `npm run check`, `npm run lint`, `npm run refreshTypes`,
 `npm run build`; the bundle carries `external "Reactv16"` and
