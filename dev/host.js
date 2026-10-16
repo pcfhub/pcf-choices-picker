@@ -67,11 +67,27 @@
      * way it looks in production rather than throwing.
      */
     var STRINGS = {
-        ChoicesPicker_Name: 'Choices Picker',
-        NoOptions: 'No options to show.',
-        Masked: 'You do not have access to this value.',
-        Clear: 'Clear',
-        OverLimit: 'This record holds more choices than the control allows.',
+        ChoicesPicker_Name: "Choices Picker",
+        ChoicesPicker_Desc: "Shows a Choice or Multi-Select Choice column as a keyboard-accessible picker.",
+        Value_Name: "Choice column",
+        Value_Desc: "The Choice or Multi-Select Choice column this picker reads and writes.",
+        Options_Name: "Options",
+        Options_Desc: "Supplies the option list where the host has no column metadata, such as a canvas app. Accepts [{\"Value\":1,\"Label\":\"Draft\",\"Color\":\"#616161\"}] or \"1:Draft, 2:In review\". Overrides the column’s own options when set.",
+        SelectionMode_Name: "Selection mode",
+        SelectionMode_Desc: "Applies to Multi-Select Choice columns only, which may be limited to one choice. A Choice column always allows exactly one, whatever this is set to.",
+        SelectionMode_Auto_Name: "Automatic",
+        SelectionMode_Single_Name: "Single",
+        SelectionMode_Multiple_Name: "Multiple",
+        Layout_Name: "Layout",
+        Layout_Desc: "Draw the options as pills or as a stacked list.",
+        Layout_Pills_Name: "Pills",
+        Layout_List_Name: "Stacked list",
+        ShowColors_Name: "Use option colours",
+        ShowColors_Desc: "Tint a selected pill with the colour defined on the choice in Dataverse.",
+        NoOptions: "No options are available for this column.",
+        Masked: "You do not have permission to view this value.",
+        Clear: "Clear selection",
+        OverLimit: "This record holds more than one choice, but the field now allows only one. Remove options until one remains.",
     };
 
     /**
